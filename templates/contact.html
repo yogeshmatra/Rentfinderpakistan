@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Support - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 3rem); padding-bottom: 5rem; max-width: 900px;">
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <div class="section-badge">Customer Support 24/7</div>
+    <h1 style="font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0;">Get in Touch With Our Team</h1>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; font-size: 1.05rem;">
+      Have a question about a rental listing, need help posting your property, or want to report an issue? We're here to help.
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+    <!-- Contact Info Cards -->
+    <div>
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
+          <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: rgba(16,185,129,0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-emerald); font-size: 1.25rem;">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div>
+            <h4 style="font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Visit Our Office</h4>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">{{ site_settings.get('office_address') }}</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
+          <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: rgba(0,200,255,0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.25rem;">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <div>
+            <h4 style="font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Phone Helpline</h4>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">{{ site_settings.get('contact_phone') }} (Mon - Sat, 9am - 7pm PKT)</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+          <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: rgba(37,211,102,0.15); display: flex; align-items: center; justify-content: center; color: #25D366; font-size: 1.25rem;">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <div>
+            <h4 style="font-weight: 700; color: #fff; margin-bottom: 0.25rem;">WhatsApp Support</h4>
+            <a href="https://wa.me/{{ site_settings.get('whatsapp_number', '923008291034')|replace(' ', '')|replace('+', '') }}" target="_blank" style="color: var(--accent-emerald); font-size: 0.9rem; font-weight: 600;">
+              Chat Instantly on WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem; backdrop-filter: blur(20px);">
+      <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1.5rem;">Send Us a Message</h3>
+      <form action="{{ url_for('contact') }}" method="POST">
+        <div class="admin-form-group">
+          <label>Your Name *</label>
+          <input type="text" name="name" class="admin-input" placeholder="e.g. Tariq Khan" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Your Email *</label>
+          <input type="email" name="email" class="admin-input" placeholder="name@example.com" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Phone / WhatsApp *</label>
+          <input type="tel" name="phone" class="admin-input" placeholder="+92 300 1234567" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Subject</label>
+          <select name="subject" class="admin-select">
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Listing Help">Help with Posting Property</option>
+            <option value="Payment / Subscription">Payment &amp; Featured Upgrade Support</option>
+            <option value="Report Scam">Report Suspicious Listing</option>
+            <option value="Partnership">Agency Partnership</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Message *</label>
+          <textarea name="message" class="admin-textarea" rows="4" placeholder="How can our support team assist you today?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-paper-plane"></i> Submit Message
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

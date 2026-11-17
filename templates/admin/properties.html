@@ -1,0 +1,114 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage All Properties - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-topbar">
+  <div class="topbar-title">
+    <h1>All Property Listings</h1>
+    <p>Complete control over all properties posted across Pakistan.</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="{{ url_for('post_property') }}" class="btn btn-primary" target="_blank">
+      <i class="fas fa-plus"></i> Post Property
+    </a>
+  </div>
+</div>
+
+<!-- Status Filter Tabs -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.75rem;">
+  <a href="{{ url_for('admin_properties', status='all') }}" class="btn {% if current_status == 'all' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">All Listings</a>
+  <a href="{{ url_for('admin_properties', status='pending') }}" class="btn {% if current_status == 'pending' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Pending Review</a>
+  <a href="{{ url_for('admin_properties', status='approved') }}" class="btn {% if current_status == 'approved' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Approved Public</a>
+  <a href="{{ url_for('admin_properties', status='rejected') }}" class="btn {% if current_status == 'rejected' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Rejected</a>
+</div>
+
+<div class="data-card">
+  {% if properties %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Property Title</th>
+            <th>Location</th>
+            <th>Monthly Rent</th>
+            <th>Owner / Agent</th>
+            <th>Status</th>
+            <th>Featured</th>
+            <th>Views</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in properties %}
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: #fff;">{{ p.title }}</div>
+                <small style="color: var(--text-dim);">{{ p.property_type }} • {{ p.bedrooms }} Bed • {{ p.size }} {{ p.size_unit }}</small>
+              </td>
+              <td>{{ p.area }}, {{ p.city }}</td>
+              <td style="color: var(--accent-emerald); font-weight: 700;">PKR {{ p.monthly_rent|format_currency }}</td>
+              <td>
+                <div>{{ p.owner_name }}</div>
+                <small style="color: var(--text-dim);">{{ p.owner_email }}</small>
+              </td>
+              <td>
+                <span class="badge-status {{ p.status }}">{{ p.status }}</span>
+                {% if p.rejection_reason %}
+                  <small style="color: var(--accent-rose); display: block; max-width: 140px;">{{ p.rejection_reason }}</small>
+                {% endif %}
+              </td>
+              <td>
+                <form action="{{ url_for('admin_toggle_featured', prop_id=p.id) }}" method="POST" style="display: inline;">
+                  <button type="submit" class="btn btn-sm {% if p.is_featured %}btn-primary{% else %}btn-outline{% endif %}" title="Toggle Featured Spotlight">
+                    <i class="fas fa-star"></i> {{ 'Featured' if p.is_featured else 'Standard' }}
+                  </button>
+                </form>
+              </td>
+              <td>{{ p.views_count }}</td>
+              <td>
+                <div style="display: flex; gap: 0.4rem;">
+                  <!-- Approve -->
+                  {% if p.status != 'approved' %}
+                    <form action="{{ url_for('admin_change_property_status', prop_id=p.id) }}" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="btn btn-primary btn-sm" title="Approve">
+                        <i class="fas fa-check"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+
+                  <!-- Reject -->
+                  {% if p.status != 'rejected' %}
+                    <form action="{{ url_for('admin_change_property_status', prop_id=p.id) }}" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="rejected">
+                      <input type="hidden" name="reason" value="Violates marketplace guidelines or inaccurate rent.">
+                      <button type="submit" class="btn btn-sm" style="background: var(--accent-rose); color: #fff;" title="Reject">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+
+                  <!-- View Public Page -->
+                  <a href="{{ url_for('property_detail', prop_id=p.id) }}" class="btn btn-secondary btn-sm" target="_blank" title="Preview Public Page">
+                    <i class="fas fa-eye"></i>
+                  </a>
+
+                  <!-- Delete -->
+                  <form action="{{ url_for('admin_delete_property', prop_id=p.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Permanently delete Property #{{ p.id }}?');">
+                    <button type="submit" class="btn btn-sm" style="background: transparent; color: var(--accent-rose); border-color: rgba(244,63,94,0.3);" title="Delete Property">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: var(--text-dim); text-align: center; padding: 3rem;">No properties found for status: {{ current_status }}.</p>
+  {% endif %}
+</div>
+{% endblock %}

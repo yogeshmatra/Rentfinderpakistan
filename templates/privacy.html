@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 3rem); padding-bottom: 5rem; max-width: 860px;">
+  <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 3rem; backdrop-filter: blur(20px); line-height: 1.8; color: var(--text-muted);">
+    <h1 style="color: #fff; font-size: 2.2rem; font-weight: 800; margin-bottom: 1.5rem;">Privacy Policy</h1>
+    <p style="margin-bottom: 1.5rem;">Last Updated: November 2026</p>
+
+    <h2 style="color: #fff; font-size: 1.4rem; font-weight: 700; margin: 2rem 0 0.75rem;">1. Information We Collect</h2>
+    <p style="margin-bottom: 1.5rem;">
+      We collect personal details necessary to facilitate property viewings and listings: your name, email address, Pakistani phone number, WhatsApp number, city, and property details.
+    </p>
+
+    <h2 style="color: #fff; font-size: 1.4rem; font-weight: 700; margin: 2rem 0 0.75rem;">2. Security &amp; Data Protection</h2>
+    <p style="margin-bottom: 1.5rem;">
+      All user passwords are encrypted using state-of-the-art cryptographic hashing algorithms (Werkzeug pbkdf2:sha256). We do not sell your personal data to third-party telemarketers.
+    </p>
+
+    <h2 style="color: #fff; font-size: 1.4rem; font-weight: 700; margin: 2rem 0 0.75rem;">3. AI Chatbot Interactions</h2>
+    <p style="margin-bottom: 1.5rem;">
+      Conversations with <em>Rent Finder AI</em> are processed securely to provide real-time property matches and answers. Personal contact information is not shared with public models.
+    </p>
+  </div>
+</div>
+{% endblock %}

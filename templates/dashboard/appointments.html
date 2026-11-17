@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Viewing Appointments - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> My Listings</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-secondary btn-sm"><i class="fas fa-heart"></i> Saved Favorites</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-primary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-secondary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 800;">Physical Viewing Appointments</h1>
+    <p style="color: var(--text-muted);">Manage scheduled physical inspection visits for your properties and viewings you requested.</p>
+  </div>
+
+  <!-- Appointments Requested by Tenants on Your Listings -->
+  <div class="data-card" style="margin-bottom: 2.5rem;">
+    <div class="data-card-header">
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-cyan);">
+        <i class="fas fa-calendar-check"></i> Viewing Requests Received for Your Listings
+      </h3>
+    </div>
+
+    {% if received %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Visitor Name</th>
+              <th>Phone</th>
+              <th>Preferred Date</th>
+              <th>Time Slot</th>
+              <th>Notes</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for apt in received %}
+              <tr>
+                <td><strong>{{ apt.prop_title }}</strong></td>
+                <td>{{ apt.visitor_name }}</td>
+                <td><a href="tel:{{ apt.visitor_phone }}" style="color: var(--accent-emerald);">{{ apt.visitor_phone }}</a></td>
+                <td>{{ apt.preferred_date }}</td>
+                <td>{{ apt.time_slot }}</td>
+                <td>{{ apt.notes or 'None' }}</td>
+                <td><span class="badge-status {{ apt.status }}">{{ apt.status }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No viewing visits requested for your properties yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Appointments You Booked as Tenant -->
+  <div class="data-card">
+    <div class="data-card-header">
+      <h3 style="font-size: 1.25rem; font-weight: 700;">
+        <i class="fas fa-calendar-day"></i> Viewings You Requested
+      </h3>
+    </div>
+
+    {% if booked %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>City</th>
+              <th>Owner Phone</th>
+              <th>Date</th>
+              <th>Slot</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for apt in booked %}
+              <tr>
+                <td><strong>{{ apt.prop_title }}</strong></td>
+                <td>{{ apt.prop_city }}</td>
+                <td><a href="tel:{{ apt.contact_phone }}" style="color: var(--accent-cyan);">{{ apt.contact_phone }}</a></td>
+                <td>{{ apt.preferred_date }}</td>
+                <td>{{ apt.time_slot }}</td>
+                <td><span class="badge-status {{ apt.status }}">{{ apt.status }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">You haven't booked any viewing appointments yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

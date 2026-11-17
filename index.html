@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rent Finder Pakistan - Find Your Perfect Rental Home</title>
+  <meta name="description" content="Pakistan's #1 dedicated rental property marketplace. Find houses, flats, rooms, portions, shops and offices for rent in Karachi, Lahore, Islamabad and across Pakistan.">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="static/css/style.css">
+  <style>
+    /* Modal Overlays for standalone file execution */
+    .app-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+    .app-modal.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      max-width: 720px;
+      width: 100%;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
+      animation: modal-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modal-pop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all var(--transition-fast);
+    }
+    .modal-close-btn:hover {
+      background: var(--accent-rose);
+      border-color: var(--accent-rose);
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Lighting Orbs -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Announcement Bar -->
+  <div style="background: rgba(16, 185, 129, 0.15); border-bottom: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1rem; text-align: center; position: relative; z-index: 101;">
+    <i class="fas fa-bullhorn" style="margin-right: 6px;"></i> Verified houses, flats, portions, shops &amp; offices for rent across all major cities of Pakistan.
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="logo-badge">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="brand-name">
+          RentFinder<span>.pk</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="nav-menu">
+        <a href="#home" class="nav-link active">Home</a>
+        <a href="#properties-section" class="nav-link">Browse Properties</a>
+        <a href="#cities-section" class="nav-link">Popular Cities</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="javascript:void(0)" onclick="openModal('pricing-modal')" class="nav-link">Pricing &amp; Plans</a>
+        <a href="#footer-section" class="nav-link">Contact</a>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Compare Tray Button -->
+        <button class="icon-btn" onclick="openCompareModal()" title="Compare Properties">
+          <i class="fas fa-columns"></i>
+          <span class="badge-count compare-badge-count" id="header-compare-count">0</span>
+        </button>
+
+        <!-- Saved Favorites Button -->
+        <button class="icon-btn" onclick="openFavoritesModal()" title="Saved Favorites">
+          <i class="fas fa-heart"></i>
+          <span class="badge-count favorites-badge-count" id="header-fav-count">0</span>
+        </button>
+
+        <button onclick="openModal('post-modal')" class="btn btn-primary btn-sm">
+          <i class="fas fa-plus"></i> Post Property
+        </button>
+
+        <!-- Mobile Drawer Hamburger -->
+        <button class="icon-btn mobile-nav-toggle" style="display: none;" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION WITH 3D WEBGL PARTICLE CANVAS & DUAL TYPOGRAPHY
+       ========================================================================== -->
+  <section class="hero-section" id="home">
+    <!-- 3D Interactive WebGL Background Canvas -->
+    <canvas id="webgl-hero-canvas"></canvas>
+
+    <div class="container hero-content">
+      <!-- Animated Pill Tag -->
+      <div class="hero-tag">
+        <span class="dot"></span>
+        <span>Pakistan's Dedicated Rental Marketplace</span>
+      </div>
+
+      <!-- Dual Typography Headline -->
+      <h1 class="hero-title">
+        <span class="text-solid">FIND YOUR</span>
+        <span class="text-stroke">PERFECT RENTAL HOME</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Explore thousands of verified houses, flats, portions, rooms, shops and commercial offices for rent across Karachi, Lahore, Islamabad, and all major Pakistani cities.
+      </p>
+
+      <!-- Floating 3D Glass Search Dock -->
+      <div class="search-dock-wrapper">
+        <div class="search-dock">
+          <!-- Quick Property Category Filter Tabs -->
+          <div class="dock-tabs">
+            <button type="button" class="dock-tab active" onclick="setCategoryFilter('', this)">All Properties</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('House', this)">Houses</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('Flat', this)">Flats &amp; Apartments</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('Upper Portion', this)">Portions</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('Room', this)">Rooms</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('Office', this)">Offices</button>
+            <button type="button" class="dock-tab" onclick="setCategoryFilter('Shop', this)">Shops</button>
+          </div>
+
+          <!-- Search Form -->
+          <div class="dock-form" id="hero-search-form">
+            <!-- City Selector -->
+            <div class="form-field">
+              <label class="field-label"><i class="fas fa-map-marker-alt"></i> City</label>
+              <select id="search-city" class="field-select" onchange="applyFilters()">
+                <option value="">All Major Cities</option>
+                <option value="Karachi">Karachi</option>
+                <option value="Lahore">Lahore</option>
+                <option value="Islamabad">Islamabad</option>
+                <option value="Rawalpindi">Rawalpindi</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Multan">Multan</option>
+                <option value="Faisalabad">Faisalabad</option>
+                <option value="Peshawar">Peshawar</option>
+                <option value="Quetta">Quetta</option>
+                <option value="Sukkur">Sukkur</option>
+              </select>
+            </div>
+
+            <!-- Area / Locality Search -->
+            <div class="form-field">
+              <label class="field-label"><i class="fas fa-search-location"></i> Area / Sector</label>
+              <input type="text" id="search-area" class="field-input" placeholder="e.g. DHA, Clifton, Bahria, Gulberg..." oninput="applyFilters()">
+            </div>
+
+            <!-- Bedrooms -->
+            <div class="form-field">
+              <label class="field-label"><i class="fas fa-bed"></i> Bedrooms</label>
+              <select id="search-beds" class="field-select" onchange="applyFilters()">
+                <option value="">Any Beds</option>
+                <option value="1">1+ Bedroom</option>
+                <option value="2">2+ Bedrooms</option>
+                <option value="3">3+ Bedrooms</option>
+                <option value="4">4+ Bedrooms</option>
+                <option value="5">5+ Bedrooms</option>
+              </select>
+            </div>
+
+            <!-- Max Budget Slider/Select -->
+            <div class="form-field">
+              <label class="field-label"><i class="fas fa-money-bill-wave"></i> Max Rent (PKR)</label>
+              <select id="search-max-rent" class="field-select" onchange="applyFilters()">
+                <option value="">Any Budget</option>
+                <option value="35000">Up to PKR 35,000</option>
+                <option value="60000">Up to PKR 60,000</option>
+                <option value="100000">Up to PKR 1.0 Lakh</option>
+                <option value="150000">Up to PKR 1.5 Lakh</option>
+                <option value="250000">Up to PKR 2.5 Lakh</option>
+                <option value="400000">Up to PKR 4.0 Lakh</option>
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" class="dock-btn" onclick="scrollToProperties()">
+              <i class="fas fa-search"></i>
+              <span>Search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick City Tags -->
+        <div class="hero-quick-tags">
+          <span>Popular Searches:</span>
+          <a href="javascript:void(0)" onclick="quickFilterCity('Karachi', 'Flat')" class="city-pill">Karachi Flats</a>
+          <a href="javascript:void(0)" onclick="quickFilterCity('Lahore', 'House')" class="city-pill">DHA Lahore</a>
+          <a href="javascript:void(0)" onclick="quickFilterCity('Islamabad', '')" class="city-pill">Islamabad F-7</a>
+          <a href="javascript:void(0)" onclick="quickFilterCity('Rawalpindi', '')" class="city-pill">Bahria Rawalpindi</a>
+          <a href="javascript:void(0)" onclick="quickFilterType('Upper Portion')" class="city-pill">Independent Portions</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       KINETIC TICKER MARQUEE
+       ========================================================================== -->
+  <div class="marquee-container">
+    <div class="marquee-content">
+      <div class="marquee-item"><span class="highlight">KARACHI</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">LAHORE <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">ISLAMABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">RAWALPINDI <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">HYDERABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">MULTAN <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">FAISALABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">PESHAWAR <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">QUETTA</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">100% VERIFIED RENTALS <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">ZERO BROKERAGE SCAMS</span> <span class="marquee-dot"></span></div>
+    </div>
+    <div class="marquee-content" aria-hidden="true">
+      <div class="marquee-item"><span class="highlight">KARACHI</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">LAHORE <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">ISLAMABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">RAWALPINDI <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">HYDERABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">MULTAN <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">FAISALABAD</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">PESHAWAR <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">QUETTA</span> <span class="marquee-dot"></span></div>
+      <div class="marquee-item">100% VERIFIED RENTALS <span class="marquee-dot"></span></div>
+      <div class="marquee-item"><span class="highlight">ZERO BROKERAGE SCAMS</span> <span class="marquee-dot"></span></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       FEATURED & ALL PROPERTIES BROWSER
+       ========================================================================== -->
+  <section class="section" id="properties-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Verified Listings</div>
+        <h2 class="section-title">Explore Rental Properties</h2>
+        <p class="section-subtitle">Real-time matching rental properties across Pakistan with verified rents, photos, and direct WhatsApp contacts.</p>
+        <div style="margin-top: 1rem; font-size: 0.95rem; color: var(--accent-emerald);" id="results-count">
+          Showing 16 verified properties
+        </div>
+      </div>
+
+      <!-- Properties Grid Container -->
+      <div class="properties-grid" id="properties-grid">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       POPULAR PAKISTANI CITIES
+       ========================================================================== -->
+  <section class="section" id="cities-section" style="background: rgba(12, 16, 27, 0.4);">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Explore Pakistan</div>
+        <h2 class="section-title">Popular Rental Cities</h2>
+        <p class="section-subtitle">Browse rental homes, portions, and apartments by metropolitan hub.</p>
+      </div>
+
+      <div class="cities-grid">
+        <div class="city-card" onclick="quickFilterCity('Karachi', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80" alt="Karachi" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Karachi</h3>
+            <div class="city-meta"><span>5+ Active Rentals</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Lahore', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="Lahore" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Lahore</h3>
+            <div class="city-meta"><span>5+ Active Rentals</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Islamabad', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80" alt="Islamabad" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Islamabad</h3>
+            <div class="city-meta"><span>4+ Active Rentals</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Rawalpindi', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80" alt="Rawalpindi" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Rawalpindi</h3>
+            <div class="city-meta"><span>Bahria Town &amp; Cantt</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Hyderabad', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=600&q=80" alt="Hyderabad" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Hyderabad</h3>
+            <div class="city-meta"><span>Qasimabad &amp; Latifabad</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Multan', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" alt="Multan" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Multan</h3>
+            <div class="city-meta"><span>Bosan Road &amp; Cantt</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Faisalabad', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80" alt="Faisalabad" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Faisalabad</h3>
+            <div class="city-meta"><span>Kohinoor &amp; D Ground</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+
+        <div class="city-card" onclick="quickFilterCity('Peshawar', '')" style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80" alt="Peshawar" class="city-bg" loading="lazy">
+          <div class="city-info">
+            <h3 class="city-name">Peshawar &amp; Quetta</h3>
+            <div class="city-meta"><span>Hayatabad &amp; Jinnah Town</span> <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       HOW IT WORKS
+       ========================================================================== -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Simple &amp; Transparent</div>
+        <h2 class="section-title">How Rent Finder Pakistan Works</h2>
+        <p class="section-subtitle">Finding a trustworthy rental house or verified tenant in Pakistan in 4 steps.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-icon"><i class="fas fa-search"></i></div>
+          <h3 class="step-title">1. Search &amp; Filter</h3>
+          <p class="step-desc">Filter by Pakistani cities, areas, budgets in PKR, bedrooms, Sui gas, and sweet water availability.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-icon"><i class="fab fa-whatsapp"></i></div>
+          <h3 class="step-title">2. Connect via WhatsApp</h3>
+          <p class="step-desc">Connect directly with verified landlords and certified agents via 1-click WhatsApp chat or direct call.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
+          <h3 class="step-title">3. Book Viewing</h3>
+          <p class="step-desc">Schedule a convenient physical inspection visit with the owner through our built-in appointment scheduler.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <div class="step-icon"><i class="fas fa-key"></i></div>
+          <h3 class="step-title">4. Move In Securely</h3>
+          <p class="step-desc">Sign standard legal tenancy agreements with verified security deposit terms and receive your keys!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       MONETIZATION CTA & PROMOTION BANNER
+       ========================================================================== -->
+  <section class="section" style="padding-top: 1rem;">
+    <div class="container">
+      <div class="monetization-cta">
+        <div class="section-badge" style="background: rgba(0, 200, 255, 0.15); color: var(--accent-cyan); border-color: rgba(0, 200, 255, 0.3);">
+          Landlords &amp; Property Dealers
+        </div>
+        <h2 style="font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; margin: 1rem 0; color: #fff;">
+          Have a Property to Rent Out? Reach 50,000+ Verified Tenants
+        </h2>
+        <p style="max-width: 650px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 1.05rem;">
+          Post your house, flat, portion, or shop for free, or upgrade to a Featured Listing to get direct tenant calls and WhatsApp inquiries within hours!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <button onclick="openModal('post-modal')" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Post Your Property Free
+          </button>
+          <button onclick="openModal('pricing-modal')" class="btn btn-secondary btn-lg">
+            View Featured &amp; Dealer Plans
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="site-footer" id="footer-section">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="margin-bottom: 1rem;">
+            <div class="logo-badge"><i class="fas fa-home"></i></div>
+            <div class="brand-name">RentFinder<span>.pk</span></div>
+          </a>
+          <p>Find Your Perfect Rental Home. Pakistan's Dedicated 3D-Animated Rental Marketplace.</p>
+          <p style="font-size: 0.85rem; color: var(--text-dim);"><i class="fas fa-map-marker-alt" style="color: var(--accent-emerald);"></i> Suite 504, FTC Building, Shahrah-e-Faisal, Karachi</p>
+          <p style="font-size: 0.85rem; color: var(--text-dim);"><i class="fas fa-phone-alt" style="color: var(--accent-cyan);"></i> +92 300 8291034</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Top Cities</h4>
+          <ul class="footer-links">
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Karachi', 'Flat')">Flats for Rent in Karachi</a></li>
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Lahore', 'House')">Houses for Rent in Lahore</a></li>
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Islamabad', '')">Portions in Islamabad</a></li>
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Rawalpindi', '')">Bahria Town Rawalpindi</a></li>
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Hyderabad', '')">Properties in Hyderabad</a></li>
+            <li><a href="javascript:void(0)" onclick="quickFilterCity('Multan', '')">Properties in Multan</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#properties-section">Browse All Listings</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('post-modal')">Post Your Rental Property</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('pricing-modal')">Landlord &amp; Dealer Plans</a></li>
+            <li><a href="javascript:void(0)" onclick="openCompareModal()">Compare Listings</a></li>
+            <li><a href="javascript:void(0)" onclick="openFavoritesModal()">Saved Favorites</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Official Payments</h4>
+          <ul class="footer-links">
+            <li><span style="color: #00A651; font-weight: 700;"><i class="fas fa-mobile-alt"></i> Easypaisa:</span> 0300 8291034</li>
+            <li><span style="color: #ED1C24; font-weight: 700;"><i class="fas fa-mobile-alt"></i> JazzCash:</span> 0301 9988776</li>
+            <li><span style="color: #2563EB; font-weight: 700;"><i class="fas fa-university"></i> Bank:</span> Meezan Bank Ltd</li>
+          </ul>
+          <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
+            <a href="https://wa.me/923008291034" target="_blank" class="icon-btn" style="color: #25D366;" title="WhatsApp Support">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="mailto:support@rentfinder.pk" class="icon-btn" title="Email Support">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Rent Finder Pakistan (Pvt) Ltd. All rights reserved.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <span>Sindh Rented Premises Ordinance 1979</span>
+          <span>Punjab Rented Premises Act 2009</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       RENT FINDER AI CHATBOT WIDGET
+       ========================================================================== -->
+  <button id="chatbot-trigger-btn" class="chatbot-trigger-btn" title="Chat with Rent Finder AI">
+    <i class="fas fa-robot" style="font-size: 1.5rem;"></i>
+  </button>
+
+  <div id="chat-modal" class="chat-modal">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-brand">
+        <div class="chat-avatar">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="chat-title">
+          <h3>Rent Finder AI</h3>
+          <span class="chat-status">Online • Gemini Powered</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button id="chat-clear-btn" class="icon-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" title="Clear conversation">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button id="chat-close-btn" class="icon-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" title="Close chat">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages Stream -->
+    <div id="chat-messages" class="chat-messages"></div>
+
+    <!-- Suggested Question Chips -->
+    <div id="chat-suggestions" class="chat-suggestions">
+      <button class="chip-btn" data-prompt="Find flats in Karachi under 50k">Karachi Flats &lt; 50k</button>
+      <button class="chip-btn" data-prompt="Show houses in Lahore DHA">Lahore DHA Houses</button>
+      <button class="chip-btn" data-prompt="Show properties in Islamabad F-7">Islamabad F-7</button>
+      <button class="chip-btn" data-prompt="How do I post my rental property?">How to Post Property</button>
+      <button class="chip-btn" data-prompt="What are standard security deposit terms in Pakistan?">Security Deposit FAQ</button>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form id="chat-form" class="chat-input-bar">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Ask about rental properties or anything..." autocomplete="off">
+      <button type="submit" class="chat-send-btn" aria-label="Send message">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- ==========================================================================
+       MODALS: PROPERTY DETAILS, POST, PRICING, COMPARE, FAVORITES, APPOINTMENT
+       ========================================================================== -->
+  
+  <!-- 1. Property Details Modal -->
+  <div id="details-modal" class="app-modal">
+    <div class="modal-box" id="details-modal-content">
+      <!-- Injected dynamically by showPropertyDetails(id) -->
+    </div>
+  </div>
+
+  <!-- 2. Post Property Modal -->
+  <div id="post-modal" class="app-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('post-modal')"><i class="fas fa-times"></i></button>
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">Post Your Rental Property</h2>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">List your house, flat, portion or shop for rent across Pakistan.</p>
+      
+      <form id="post-property-form" onsubmit="handlePostProperty(event)">
+        <div class="admin-form-group">
+          <label>Property Title *</label>
+          <input type="text" id="post-title" class="admin-input" placeholder="e.g. Modern 3-Bed Apartment with Balcony in Clifton" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="admin-form-group">
+            <label>City *</label>
+            <select id="post-city" class="admin-select" required>
+              <option value="Karachi">Karachi</option>
+              <option value="Lahore">Lahore</option>
+              <option value="Islamabad">Islamabad</option>
+              <option value="Rawalpindi">Rawalpindi</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Multan">Multan</option>
+              <option value="Faisalabad">Faisalabad</option>
+              <option value="Peshawar">Peshawar</option>
+              <option value="Quetta">Quetta</option>
+            </select>
+          </div>
+
+          <div class="admin-form-group">
+            <label>Category *</label>
+            <select id="post-type" class="admin-select" required>
+              <option value="Flat">Flat / Apartment</option>
+              <option value="House">House / Bungalow</option>
+              <option value="Upper Portion">Upper Portion</option>
+              <option value="Lower Portion">Lower Portion</option>
+              <option value="Room">Room</option>
+              <option value="Shop">Shop</option>
+              <option value="Office">Commercial Office</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="admin-form-group">
+            <label>Area / Sector *</label>
+            <input type="text" id="post-area" class="admin-input" placeholder="e.g. DHA Phase 6, Bahria Town" required>
+          </div>
+
+          <div class="admin-form-group">
+            <label>Monthly Rent (PKR) *</label>
+            <input type="number" id="post-rent" class="admin-input" placeholder="e.g. 75000" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+          <div class="admin-form-group">
+            <label>Bedrooms</label>
+            <input type="number" id="post-beds" class="admin-input" value="3" min="0">
+          </div>
+          <div class="admin-form-group">
+            <label>Bathrooms</label>
+            <input type="number" id="post-baths" class="admin-input" value="3" min="1">
+          </div>
+          <div class="admin-form-group">
+            <label>Size (Marla/SqFt)</label>
+            <input type="text" id="post-size" class="admin-input" value="2000 Sq Ft">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="admin-form-group">
+            <label>Contact Phone *</label>
+            <input type="tel" id="post-phone" class="admin-input" placeholder="+92 300 1234567" required>
+          </div>
+          <div class="admin-form-group">
+            <label>WhatsApp Number *</label>
+            <input type="tel" id="post-whatsapp" class="admin-input" placeholder="+92 300 1234567" required>
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Photo URL (or Image Link)</label>
+          <input type="url" id="post-image" class="admin-input" placeholder="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00...">
+        </div>
+
+        <div class="admin-form-group">
+          <label>Description</label>
+          <textarea id="post-desc" class="admin-textarea" rows="3" placeholder="Describe water, gas, electricity, and lease conditions..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-check-circle"></i> Submit Property Listing
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Pricing & Monetization Modal -->
+  <div id="pricing-modal" class="app-modal">
+    <div class="modal-box" style="max-width: 820px;">
+      <button class="modal-close-btn" onclick="closeModal('pricing-modal')"><i class="fas fa-times"></i></button>
+      <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center; color: #fff;">Plans &amp; Promotion Packages</h2>
+      <p style="color: var(--text-dim); text-align: center; margin-bottom: 2rem;">Upgrade your listings to receive 5x more verified tenant inquiries!</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center;">
+          <h4 style="font-size: 1.1rem; color: #fff;">Free Landlord</h4>
+          <div style="font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0; color: #fff;">PKR 0</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">2 Active listings, standard search.</p>
+          <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="openModal('post-modal'); closeModal('pricing-modal');">Get Started</button>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 2px solid var(--accent-emerald); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; box-shadow: var(--shadow-glow-emerald);">
+          <span style="font-size: 0.7rem; font-weight: 800; background: var(--accent-emerald); color: #fff; padding: 2px 8px; border-radius: var(--radius-full);">POPULAR</span>
+          <h4 style="font-size: 1.1rem; color: #fff; margin-top: 0.25rem;">Silver Landlord</h4>
+          <div style="font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0; color: var(--accent-emerald);">PKR 3,500</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">10 Listings, 2 Featured badges, WhatsApp lead alerts.</p>
+          <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="alert('Please transfer PKR 3,500 via Easypaisa or JazzCash to 03008291034!')">Subscribe</button>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center;">
+          <h4 style="font-size: 1.1rem; color: var(--accent-cyan);">Platinum Agency</h4>
+          <div style="font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0; color: var(--accent-cyan);">PKR 15,000</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">50+ Listings, 10 Featured badges, Agency banner.</p>
+          <button class="btn btn-cyan btn-sm" style="width: 100%;" onclick="alert('Please transfer PKR 15,000 to Meezan Bank IBAN PK45MEZN0001020304050607!')">Subscribe</button>
+        </div>
+      </div>
+
+      <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-md); padding: 1.25rem; font-size: 0.85rem;">
+        <strong>Official Payment Numbers:</strong> Easypaisa (<code>0300 8291034</code>) • JazzCash (<code>0301 9988776</code>) • Title: <em>Rent Finder Pakistan</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Compare Modal -->
+  <div id="compare-modal" class="app-modal">
+    <div class="modal-box" style="max-width: 900px;">
+      <button class="modal-close-btn" onclick="closeModal('compare-modal')"><i class="fas fa-times"></i></button>
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; color: #fff;">Side-by-Side Property Comparison</h2>
+      <div id="compare-modal-body" style="overflow-x: auto;">
+        <!-- Injected dynamically by renderCompareTable() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Favorites Modal -->
+  <div id="favorites-modal" class="app-modal">
+    <div class="modal-box" style="max-width: 760px;">
+      <button class="modal-close-btn" onclick="closeModal('favorites-modal')"><i class="fas fa-times"></i></button>
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; color: #fff;">My Saved Favorites (<span id="fav-count-display">0</span>)</h2>
+      <div id="favorites-modal-body" class="properties-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+        <!-- Injected dynamically by renderFavorites() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Book Viewing Modal -->
+  <div id="appointment-modal" class="app-modal">
+    <div class="modal-box" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeModal('appointment-modal')"><i class="fas fa-times"></i></button>
+      <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">Book a Viewing Appointment</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;" id="apt-prop-title">Select your preferred date for physical visit.</p>
+      
+      <form onsubmit="handleAppointmentSubmit(event)">
+        <div class="admin-form-group">
+          <label>Your Name *</label>
+          <input type="text" id="apt-name" class="admin-input" placeholder="e.g. Asad Malik" required>
+        </div>
+        <div class="admin-form-group">
+          <label>Phone / WhatsApp Number *</label>
+          <input type="tel" id="apt-phone" class="admin-input" placeholder="+92 300 1234567" required>
+        </div>
+        <div class="admin-form-group">
+          <label>Preferred Date *</label>
+          <input type="date" id="apt-date" class="admin-input" required>
+        </div>
+        <div class="admin-form-group">
+          <label>Preferred Time Slot</label>
+          <select id="apt-slot" class="admin-select">
+            <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+            <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
+            <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          Confirm Appointment Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="static/js/main.js"></script>
+  <script src="static/js/chatbot.js"></script>
+
+  <!-- Complete Standalone Client Logic for All 16 Pakistani Properties, Search & Filters -->
+  <script>
+    // Embedded Realistic Pakistani Rental Properties Database
+    const PROPERTIES_DATA = [
+      {
+        id: 1,
+        title: "Luxury 3-Bed Apartment with Arabian Sea Breeze & Balcony",
+        description: "Prime executive residence situated in high-demand Clifton Block 4 near Bilawal House and Beach Avenue. 3 spacious bedrooms with attached imported European-tiled bathrooms, an airy drawing-dining lounge, contemporary Italian open kitchen, standby Caterpillar generator (zero loadshedding), and sweet water line.",
+        property_type: "Flat",
+        city: "Karachi",
+        area: "Clifton Block 4",
+        address: "Marine Drive Heights, Block 4, Clifton, Karachi",
+        monthly_rent: 185000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 370000,
+        extra_charges: "Building Maintenance: PKR 12,000 / month",
+        bedrooms: 3,
+        bathrooms: 3,
+        size: "2,400 Sq Ft",
+        furnished: "Semi-Furnished",
+        parking: "2 Covered Basement",
+        facilities: ["Standby Generator", "High-Speed Elevators", "Sweet Water Supply", "Sui Gas Active", "24/7 Security CCTV", "Covered Basement Parking", "Balcony"],
+        image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Karachi Prime Estates",
+        contact_phone: "+92 301 9988776",
+        contact_whatsapp: "923019988776",
+        is_featured: true
+      },
+      {
+        id: 2,
+        title: "Brand New 500 Sq Yards 5-Bed Designer Bungalow with Basement",
+        description: "Exquisite modern architectural masterpiece in DHA Phase 6 on a quiet 50-foot wide road. Architect-designed with double-height ceiling lobby, Spanish porcelain flooring, 5 master bedrooms, home theatre basement room, lush front lawn with water feature, and separate 2-room servant quarter.",
+        property_type: "House",
+        city: "Karachi",
+        area: "DHA Phase 6",
+        address: "Khayaban-e-Hafiz, Phase 6, DHA Karachi",
+        monthly_rent: 380000,
+        advance_payment: "3 Months Advance",
+        security_deposit: 760000,
+        extra_charges: "CBC Municipal Taxes & Security: PKR 8,000 / month",
+        bedrooms: 5,
+        bathrooms: 6,
+        size: "500 Sq Yards",
+        furnished: "Unfurnished",
+        parking: "4 Vehicles",
+        facilities: ["Lawn / Garden", "Home Theatre Room", "Sui Gas Active", "Sweet Water Line", "Solar 15kW Installed", "Servant Quarters", "Basement"],
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Tariq Mehmood (Senior Consultant)",
+        contact_phone: "+92 301 9988776",
+        contact_whatsapp: "923019988776",
+        is_featured: true
+      },
+      {
+        id: 3,
+        title: "1 Kanal Ultra-Modern 5-Bed House with Basement & Lawn in DHA Phase 5",
+        description: "Magnificent corner 1 Kanal home in Sector C, DHA Phase 5 Lahore. Built according to top engineering specifications with Ashwood doors, Grohe fittings, dual designer kitchens with cooking range, home theatre, landscaped lawn with pergola, and covered car porch for 3 full-size SUVs.",
+        property_type: "House",
+        city: "Lahore",
+        area: "DHA Phase 5",
+        address: "Sector C, Main Boulevard, Phase 5, DHA Lahore",
+        monthly_rent: 320000,
+        advance_payment: "3 Months Advance",
+        security_deposit: 640000,
+        extra_charges: "DHA Maintenance & Security: PKR 6,500 / month",
+        bedrooms: 5,
+        bathrooms: 6,
+        size: "1 Kanal",
+        furnished: "Unfurnished",
+        parking: "3 SUVs",
+        facilities: ["Lawn / Garden", "Corner Plot", "Standby Generator Wiring", "Sui Gas Active", "LESCO 3-Phase Meter", "Servant Quarters"],
+        image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Malik Usman Real Estate",
+        contact_phone: "+92 321 4455667",
+        contact_whatsapp: "923214455667",
+        is_featured: true
+      },
+      {
+        id: 4,
+        title: "Prestigious 10 Marla 4-Bed House in F-7/2 with Margalla View",
+        description: "Prestigious CDA approved residential sector F-7/2 Islamabad, close to Jinnah Super Market and Safa Gold Mall. 4 bedrooms with Italian bath ceramics, large double lounge with fireplace, formal drawing room, fitted teak wood kitchen, and rooftop terrace facing the picturesque Margalla Hills.",
+        property_type: "House",
+        city: "Islamabad",
+        area: "Sector F-7/2",
+        address: "Street 34, Sector F-7/2, Islamabad",
+        monthly_rent: 260000,
+        advance_payment: "3 Months Advance",
+        security_deposit: 520000,
+        extra_charges: "Security & CDA conservancy: PKR 5,000 / month",
+        bedrooms: 4,
+        bathrooms: 5,
+        size: "10 Marla",
+        furnished: "Semi-Furnished",
+        parking: "3 Cars",
+        facilities: ["Margalla Hills View", "Lawn / Garden", "Sui Gas Active", "CDA Water Connection", "Servant Quarters", "Fireplace"],
+        image: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Syed Farhan Bukhari",
+        contact_phone: "+92 333 5511223",
+        contact_whatsapp: "923335511223",
+        is_featured: true
+      },
+      {
+        id: 5,
+        title: "Fully Furnished 2-Bed Luxury Serviced Apartment off MM Alam Road",
+        description: "Boutique luxury living right next to Lahore's culinary strip on MM Alam Road Gulberg. Tastefully decorated with plush sofa set, 65-inch 4K LED TV, king-size orthopedic beds, inverter ACs, underground parking, and 100% generator backup.",
+        property_type: "Flat",
+        city: "Lahore",
+        area: "Gulberg III",
+        address: "Grand Residency Tower, off MM Alam Road, Gulberg III, Lahore",
+        monthly_rent: 115000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 230000,
+        extra_charges: "Service & Maintenance: PKR 10,000 / month",
+        bedrooms: 2,
+        bathrooms: 2,
+        size: "1,350 Sq Ft",
+        furnished: "Furnished",
+        parking: "1 Reserved Slot",
+        facilities: ["Furnished with Appliances", "Inverter ACs", "Gymnasium Access", "High-Speed Elevators", "Standby Generator", "Balcony"],
+        image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Malik Usman Real Estate",
+        contact_phone: "+92 321 4455667",
+        contact_whatsapp: "923214455667",
+        is_featured: true
+      },
+      {
+        id: 6,
+        title: "Modern 2-Bed Furnished Apartment with Scenic Hills View in E-11",
+        description: "Elegantly furnished apartment in a family-oriented tower in Sector E-11/2 Islamabad. 2 spacious bedrooms with attached bathrooms, drawing room, American open kitchen, private balcony overlooking the Margalla range, and 24-hour backup generator.",
+        property_type: "Flat",
+        city: "Islamabad",
+        area: "Sector E-11/2",
+        address: "Silver Oaks Heights, Sector E-11/2, Islamabad",
+        monthly_rent: 80000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 160000,
+        extra_charges: "Building Maintenance: PKR 6,000 / month",
+        bedrooms: 2,
+        bathrooms: 2,
+        size: "1,250 Sq Ft",
+        furnished: "Furnished",
+        parking: "1 Covered Space",
+        facilities: ["Furnished with Appliances", "Margalla View Balcony", "High-Speed Elevators", "Standby Generator", "24/7 Security CCTV"],
+        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Syed Farhan Bukhari",
+        contact_phone: "+92 333 5511223",
+        contact_whatsapp: "923335511223",
+        is_featured: true
+      },
+      {
+        id: 7,
+        title: "Spacious 3-Bed Upper Portion with Separate Entrance & Roof Access",
+        description: "Convenient and secure 1st floor upper portion in Block 13-D Gulshan-e-Iqbal Karachi. Completely independent staircase entrance, separate K-Electric digital meter, separate Sui Gas line, 3 well-lit bedrooms, and full private terrace access.",
+        property_type: "Upper Portion",
+        city: "Karachi",
+        area: "Gulshan-e-Iqbal Block 13-D",
+        address: "Near Hasan Square, Block 13-D, Gulshan-e-Iqbal, Karachi",
+        monthly_rent: 58000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 116000,
+        extra_charges: "Sub-meter utilities sharing",
+        bedrooms: 3,
+        bathrooms: 3,
+        size: "240 Sq Yards",
+        furnished: "Unfurnished",
+        parking: "1 Car Space",
+        facilities: ["Independent Entrance", "Separate Gas Meter", "Separate Electric Meter", "Roof Access / Terrace", "Sweet Water Line"],
+        image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Rashid Property Advisor",
+        contact_phone: "+92 300 2345678",
+        contact_whatsapp: "923002345678",
+        is_featured: false
+      },
+      {
+        id: 8,
+        title: "10 Marla Ground Floor Lower Portion with Car Porch near Expo Center",
+        description: "Comfortable ground floor portion in Johar Town Block J2 Lahore. 3 bedrooms with attached washrooms, large drawing room, TV lounge, fitted kitchen, dedicated covered car porch for 2 cars, separate Wapda meter, and peaceful family environment.",
+        property_type: "Lower Portion",
+        city: "Lahore",
+        area: "Johar Town Block J2",
+        address: "Block J2, Near Expo Center, Johar Town, Lahore",
+        monthly_rent: 65000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 130000,
+        extra_charges: "Separate utility meters",
+        bedrooms: 3,
+        bathrooms: 3,
+        size: "10 Marla",
+        furnished: "Unfurnished",
+        parking: "2 Cars (Porch)",
+        facilities: ["Car Porch Parking", "Independent Gas Connection", "Independent Electric Meter", "Near Doctors Hospital", "Wide Street (40 ft)"],
+        image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Haji Iftikhar Property Dealer",
+        contact_phone: "+92 321 9876543",
+        contact_whatsapp: "923219876543",
+        is_featured: false
+      },
+      {
+        id: 9,
+        title: "10 Marla 4-Bed Luxury House in Bahria Town Phase 7 near River View",
+        description: "Solid constructed 10 Marla designer house in Phase 7 Bahria Town Rawalpindi. 4 air-conditioned bedrooms with en-suite baths, 2 imported kitchens, double-height lobby, zero loadshedding with 24/7 underground power supply, and round-the-clock security.",
+        property_type: "House",
+        city: "Rawalpindi",
+        area: "Bahria Town Phase 7",
+        address: "Sector B, River View Commercial, Phase 7, Bahria Town",
+        monthly_rent: 115000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 230000,
+        extra_charges: "Bahria Maintenance: PKR 4,500 / month",
+        bedrooms: 4,
+        bathrooms: 5,
+        size: "10 Marla",
+        furnished: "Unfurnished",
+        parking: "2 Vehicles",
+        facilities: ["Bahria 24/7 Electricity", "Sui Gas Available", "Servant Quarters", "Gated Security", "Car Porch"],
+        image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Malik Usman Real Estate",
+        contact_phone: "+92 321 4455667",
+        contact_whatsapp: "923214455667",
+        is_featured: false
+      },
+      {
+        id: 10,
+        title: "3-Bed Family Ground Portion with Sweet Water in Qasimabad Hyderabad",
+        description: "Comfortable ground floor portion in a reputable residential colony of Qasimabad Hyderabad. 3 airy bedrooms, attached washrooms, front veranda, open courtyard, drawing room, uninterrupted WASA sweet water supply, and Sui gas.",
+        property_type: "Lower Portion",
+        city: "Hyderabad",
+        area: "Qasimabad Phase 1",
+        address: "Citizen Colony, Qasimabad, Hyderabad",
+        monthly_rent: 38000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 76000,
+        extra_charges: "Bills as per meter",
+        bedrooms: 3,
+        bathrooms: 3,
+        size: "200 Sq Yards",
+        furnished: "Unfurnished",
+        parking: "1 Car Porch",
+        facilities: ["Sweet Water Connection", "Sui Gas Active", "Car Parking Porch", "Open Courtyard"],
+        image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Ahmed Ali Broker",
+        contact_phone: "+92 300 3012345",
+        contact_whatsapp: "923003012345",
+        is_featured: false
+      },
+      {
+        id: 11,
+        title: "1 Kanal 5-Bed Executive Residence with Green Lawn in Multan Cantt",
+        description: "Tranquil 1 Kanal residence located in the secure Cantt enclave of Multan near Bosan Road. 5 spacious bedrooms, 2 kitchens, large drawing and formal dining room, wide terrace, expansive front lawn with fruit trees, and servant quarters.",
+        property_type: "House",
+        city: "Multan",
+        area: "Multan Cantt",
+        address: "Officers Lane, Multan Cantt, Multan",
+        monthly_rent: 95000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 190000,
+        extra_charges: "Cantt Board charges PKR 3,000 / month",
+        bedrooms: 5,
+        bathrooms: 5,
+        size: "1 Kanal",
+        furnished: "Unfurnished",
+        parking: "3 Cars",
+        facilities: ["Lawn / Garden", "Secure Cantt Location", "Sui Gas Active", "MEPCO 3-Phase", "Car Porch"],
+        image: "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Chaudhry Nadeem (Multan Real Estate)",
+        contact_phone: "+92 302 7711223",
+        contact_whatsapp: "923027711223",
+        is_featured: false
+      },
+      {
+        id: 12,
+        title: "2-Bed Modern Apartment in Kohinoor City near D Ground Faisalabad",
+        description: "Comfortable 2-bedroom apartment in Kohinoor City Faisalabad, adjacent to D Ground commercial center. Ceramic tile flooring, drawing room, kitchen with granite counter, balcony, and elevator access. Safe family environment with 24/7 security guard.",
+        property_type: "Flat",
+        city: "Faisalabad",
+        area: "Kohinoor City / D Ground",
+        address: "Kohinoor Heights, Jaranwala Road, Faisalabad",
+        monthly_rent: 42000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 84000,
+        extra_charges: "Maintenance: PKR 4,000 / month",
+        bedrooms: 2,
+        bathrooms: 2,
+        size: "950 Sq Ft",
+        furnished: "Semi-Furnished",
+        parking: "1 Reserved Space",
+        facilities: ["Elevator / Lift", "Standby Generator for Lifts", "Sui Gas Active", "Near D Ground Market"],
+        image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Mian Shahid Property Advisor",
+        contact_phone: "+92 300 6655443",
+        contact_whatsapp: "923006655443",
+        is_featured: false
+      },
+      {
+        id: 13,
+        title: "Independent Furnished Studio Room with Bath & Kitchenette in I-8/4",
+        description: "Well-maintained independent studio accommodation in Sector I-8/4 Islamabad, ideal for working executive, doctor or scholar. Fully furnished with bed, study table, wardrobe, mini fridge, inverter split AC, and attached modern bath with geyser.",
+        property_type: "Room",
+        city: "Islamabad",
+        area: "Sector I-8/4",
+        address: "Street 12, Sector I-8/4, Islamabad",
+        monthly_rent: 28000,
+        advance_payment: "1 Month Advance",
+        security_deposit: 50000,
+        extra_charges: "All bills inclusive (Electricity, Gas, Fast Wi-Fi)",
+        bedrooms: 1,
+        bathrooms: 1,
+        size: "350 Sq Ft",
+        furnished: "Furnished",
+        parking: "1 Bike / Car Space",
+        facilities: ["Furnished with Bed & Wardrobe", "Inverter Split AC", "High-Speed Wi-Fi", "Attached Bathroom with Geyser", "All Bills Included"],
+        image: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Syed Farhan Bukhari",
+        contact_phone: "+92 333 5511223",
+        contact_whatsapp: "923335511223",
+        is_featured: false
+      },
+      {
+        id: 14,
+        title: "Prime Commercial Corporate Office Floor (2,500 Sq Ft) in Blue Area",
+        description: "Class-A commercial office space located in the business epicenter of Islamabad: Jinnah Avenue, Blue Area. Fitted with glass partitions, executive conference room, 4 director rooms, open hall for 30+ workstations, dedicated server room, and 5 reserved underground car parking slots.",
+        property_type: "Office",
+        city: "Islamabad",
+        area: "Blue Area (Jinnah Avenue)",
+        address: "State Life Tower, Blue Area, Islamabad",
+        monthly_rent: 250000,
+        advance_payment: "3 Months Advance",
+        security_deposit: 500000,
+        extra_charges: "Plaza Central Maintenance: PKR 25,000 / month",
+        bedrooms: 0,
+        bathrooms: 4,
+        size: "2,500 Sq Ft",
+        furnished: "Semi-Furnished",
+        parking: "5 Reserved Underground",
+        facilities: ["Centralized Air Conditioning", "Glass Partitions & Cabins", "Conference Room", "Standby Industrial Generators", "4 High-Speed Lifts"],
+        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Syed Farhan Bukhari",
+        contact_phone: "+92 333 5511223",
+        contact_whatsapp: "923335511223",
+        is_featured: false
+      },
+      {
+        id: 15,
+        title: "Prime Corner Retail Commercial Shop (450 Sq Ft) near Mall Road Lahore",
+        description: "Exceptional high-footfall corner retail showroom located right off the historic Mall Road & Anarkali Bazaar intersection Lahore. Double glass display frontage, ceramic flooring, false ceiling with spotlights, mezzanine storage space, and commercial 3-phase power.",
+        property_type: "Shop",
+        city: "Lahore",
+        area: "Mall Road / Anarkali",
+        address: "Corner Plaza, Commercial Square, Mall Road, Lahore",
+        monthly_rent: 85000,
+        advance_payment: "6 Months Advance",
+        security_deposit: 170000,
+        extra_charges: "Commercial Plaza fee PKR 5,000 / month",
+        bedrooms: 0,
+        bathrooms: 1,
+        size: "450 Sq Ft",
+        furnished: "Unfurnished",
+        parking: "1 Vehicle",
+        facilities: ["Corner Location", "Double Glass Display", "Mezzanine Storage Floor", "High Footfall Area", "Commercial 3-Phase Meter"],
+        image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Malik Usman Real Estate",
+        contact_phone: "+92 321 4455667",
+        contact_whatsapp: "923214455667",
+        is_featured: false
+      },
+      {
+        id: 16,
+        title: "Renovated 4-Bed House in Hayatabad Phase 3 Peshawar",
+        description: "Beautiful Spanish-style family home located in Hayatabad Phase 3 Peshawar. 4 large bedrooms with attached bathrooms, drawing room with wooden paneling, lawn, car porch for 2 vehicles, and peaceful residential neighborhood.",
+        property_type: "House",
+        city: "Peshawar",
+        area: "Hayatabad Phase 3",
+        address: "Sector F, Phase 3, Hayatabad, Peshawar",
+        monthly_rent: 85000,
+        advance_payment: "2 Months Advance",
+        security_deposit: 170000,
+        extra_charges: "Separate utility meters",
+        bedrooms: 4,
+        bathrooms: 4,
+        size: "10 Marla",
+        furnished: "Unfurnished",
+        parking: "2 Cars",
+        facilities: ["Lawn / Garden", "Sui Gas Active", "Car Porch", "Near Tatara Park"],
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Khan Property Agency",
+        contact_phone: "+92 333 9123456",
+        contact_whatsapp: "923339123456",
+        is_featured: false
+      }
+    ];
+
+    let currentSelectedCategory = "";
+    let savedFavorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
+    let compareList = JSON.parse(localStorage.getItem('rf_compare') || '[]');
+
+    // Format currency helper
+    function formatPKR(val) {
+      if (val >= 10000000) return (val / 10000000).toFixed(2) + " Crore";
+      if (val >= 100000) return (val / 100000).toFixed(2) + " Lakh";
+      return Number(val).toLocaleString();
+    }
+
+    // Render properties grid
+    function renderProperties(list) {
+      const grid = document.getElementById('properties-grid');
+      const countEl = document.getElementById('results-count');
+      grid.innerHTML = '';
+      countEl.textContent = `Showing ${list.length} verified propert${list.length === 1 ? 'y' : 'ies'}`;
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 4rem 2rem; text-align: center;">
+            <i class="fas fa-search-minus" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+            <h3 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">No Matching Properties Found</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try resetting your search filters or choosing a different city.</p>
+            <button onclick="resetAllFilters()" class="btn btn-secondary">Clear Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      list.forEach(p => {
+        const isFav = savedFavorites.includes(p.id);
+        const card = document.createElement('div');
+        card.className = 'property-card';
+        card.innerHTML = `
+          <div class="card-media">
+            <img src="${p.image}" alt="${p.title}" class="card-img" loading="lazy">
+            <div class="media-badges">
+              ${p.is_featured ? '<span class="badge-featured">Featured</span>' : ''}
+              <span class="badge-type">${p.property_type}</span>
+            </div>
+            <button type="button" class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav(${p.id}, event)" title="Save to favorites">
+              <i class="${isFav ? 'fas fa-heart text-danger' : 'far fa-heart'}"></i>
+            </button>
+            <div class="card-price-tag">
+              PKR ${formatPKR(p.monthly_rent)} <small>/ month</small>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-location">
+              <i class="fas fa-map-marker-alt"></i> ${p.area}, ${p.city}
+            </div>
+            <h3 class="card-title" onclick="showPropertyDetails(${p.id})" style="cursor: pointer;">
+              ${p.title}
+            </h3>
+
+            <div class="card-specs">
+              ${p.bedrooms > 0 ? `<div class="spec-item"><i class="fas fa-bed"></i> ${p.bedrooms} Beds</div>` : ''}
+              ${p.bathrooms > 0 ? `<div class="spec-item"><i class="fas fa-bath"></i> ${p.bathrooms} Baths</div>` : ''}
+              <div class="spec-item"><i class="fas fa-ruler-combined"></i> ${p.size}</div>
+              <div class="spec-item"><i class="fas fa-couch"></i> ${p.furnished}</div>
+            </div>
+
+            <div class="card-footer">
+              <div class="card-owner-info">
+                <i class="fas fa-user-check" style="color: var(--accent-emerald);"></i>
+                <span>${p.contact_name}</span>
+              </div>
+              <div class="card-actions">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleCompare(${p.id})" title="Add to comparison">
+                  <i class="fas fa-columns"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="showPropertyDetails(${p.id})">
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Attach 3D tilt effect
+      if (typeof init3DCardTilt === 'function') init3DCardTilt();
+    }
+
+    // Filter Logic
+    function applyFilters() {
+      const city = document.getElementById('search-city').value.toLowerCase();
+      const area = document.getElementById('search-area').value.toLowerCase().trim();
+      const beds = document.getElementById('search-beds').value;
+      const maxRent = document.getElementById('search-max-rent').value;
+
+      const filtered = PROPERTIES_DATA.filter(p => {
+        if (currentSelectedCategory && p.property_type !== currentSelectedCategory) return false;
+        if (city && p.city.toLowerCase() !== city) return false;
+        if (area && !p.area.toLowerCase().includes(area) && !p.address.toLowerCase().includes(area)) return false;
+        if (beds && p.bedrooms < parseInt(beds)) return false;
+        if (maxRent && p.monthly_rent > parseInt(maxRent)) return false;
+        return true;
+      });
+
+      renderProperties(filtered);
+    }
+
+    function setCategoryFilter(type, btn) {
+      currentSelectedCategory = type;
+      document.querySelectorAll('.dock-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    function quickFilterCity(cityName, typeName) {
+      document.getElementById('search-city').value = cityName;
+      if (typeName) currentSelectedCategory = typeName;
+      applyFilters();
+      scrollToProperties();
+    }
+
+    function quickFilterType(typeName) {
+      currentSelectedCategory = typeName;
+      applyFilters();
+      scrollToProperties();
+    }
+
+    function resetAllFilters() {
+      document.getElementById('search-city').value = '';
+      document.getElementById('search-area').value = '';
+      document.getElementById('search-beds').value = '';
+      document.getElementById('search-max-rent').value = '';
+      currentSelectedCategory = '';
+      document.querySelectorAll('.dock-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+      applyFilters();
+    }
+
+    function scrollToProperties() {
+      document.getElementById('properties-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // Show Property Details Modal
+    function showPropertyDetails(id) {
+      const p = PROPERTIES_DATA.find(x => x.id === id);
+      if (!p) return;
+
+      const box = document.getElementById('details-modal-content');
+      box.innerHTML = `
+        <button class="modal-close-btn" onclick="closeModal('details-modal')"><i class="fas fa-times"></i></button>
+        <div style="margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            ${p.is_featured ? '<span class="badge-featured">Featured</span>' : ''}
+            <span class="badge-type">${p.property_type}</span>
+            <span class="badge-status approved"><i class="fas fa-check-circle"></i> Ready to Move</span>
+          </div>
+          <h2 style="font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1.3;">${p.title}</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; margin-top: 0.25rem;">
+            <i class="fas fa-map-marker-alt" style="color: var(--accent-emerald);"></i> ${p.address}
+          </p>
+        </div>
+
+        <div style="width: 100%; height: 320px; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 2rem;">
+          <img src="${p.image}" alt="${p.title}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-glass); margin-bottom: 1.5rem;">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Monthly Rent</span>
+            <strong style="color: var(--accent-emerald); font-size: 1.4rem;">PKR ${formatPKR(p.monthly_rent)}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Advance Payment</span>
+            <strong style="color: #fff; font-size: 1.05rem;">${p.advance_payment}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Security Deposit</span>
+            <strong style="color: var(--accent-gold); font-size: 1.05rem;">PKR ${formatPKR(p.security_deposit)}</strong>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Description</h4>
+          <p style="color: var(--text-muted); line-height: 1.7; font-size: 0.95rem;">${p.description}</p>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+          <h4 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem;">Facilities &amp; Utilities</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            ${p.facilities.map(f => `<span style="background: rgba(16,185,129,0.12); color: var(--accent-emerald); border: 1px solid rgba(16,185,129,0.3); padding: 0.3rem 0.8rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600;"><i class="fas fa-check" style="margin-right: 4px;"></i> ${f}</span>`).join('')}
+          </div>
+        </div>
+
+        <!-- Contact Actions -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-top: 1px solid var(--border-glass); padding-top: 1.5rem;">
+          <a href="https://wa.me/${p.contact_whatsapp}?text=Assalam-o-Alaikum,%20I%20am%20interested%20in%20your%20rental%20property%20%22${encodeURIComponent(p.title)}%22%20on%20Rent%20Finder%20Pakistan." target="_blank" class="btn" style="background: #25D366; color: #fff; width: 100%;">
+            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp Owner
+          </a>
+
+          <a href="tel:${p.contact_phone}" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-phone-alt"></i> Call (${p.contact_phone})
+          </a>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button onclick="bookViewingModal(${p.id})" class="btn btn-secondary" style="flex: 1; border-color: var(--accent-cyan); color: var(--accent-cyan);">
+            <i class="fas fa-calendar-alt"></i> Book Physical Viewing
+          </button>
+          <button onclick="alert('Thank you! This property listing has been flagged for administrative review.')" class="btn btn-outline" style="border-color: var(--accent-rose); color: var(--accent-rose);">
+            <i class="fas fa-flag"></i> Report
+          </button>
+        </div>
+      `;
+
+      openModal('details-modal');
+    }
+
+    // Favorites Logic
+    function toggleFav(id, e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (savedFavorites.includes(id)) {
+        savedFavorites = savedFavorites.filter(x => x !== id);
+        showToast("Removed from saved favorites.", "info");
+      } else {
+        savedFavorites.push(id);
+        showToast("Saved to favorites!", "success");
+      }
+      localStorage.setItem('rf_favorites', JSON.stringify(savedFavorites));
+      updateFavUI();
+      applyFilters();
+    }
+
+    function updateFavUI() {
+      document.getElementById('header-fav-count').textContent = savedFavorites.length;
+    }
+
+    function openFavoritesModal() {
+      const container = document.getElementById('favorites-modal-body');
+      document.getElementById('fav-count-display').textContent = savedFavorites.length;
+      container.innerHTML = '';
+
+      if (savedFavorites.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-dim); text-align: center; grid-column: 1 / -1; padding: 2rem;">No saved properties yet. Click the heart icon on any property to save it.</p>';
+      } else {
+        const favProps = PROPERTIES_DATA.filter(p => savedFavorites.includes(p.id));
+        favProps.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'property-card';
+          item.innerHTML = `
+            <div class="card-media">
+              <img src="${p.image}" class="card-img" alt="${p.title}">
+              <div class="card-price-tag">PKR ${formatPKR(p.monthly_rent)}</div>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title">${p.title}</h4>
+              <p style="color: var(--text-dim); font-size: 0.85rem;">${p.area}, ${p.city}</p>
+              <button onclick="closeModal('favorites-modal'); showPropertyDetails(${p.id})" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 1rem;">View Details</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      }
+      openModal('favorites-modal');
+    }
+
+    // Compare Logic
+    function toggleCompare(id) {
+      if (compareList.includes(id)) {
+        compareList = compareList.filter(x => x !== id);
+        showToast("Removed from comparison tray.", "info");
+      } else {
+        if (compareList.length >= 4) {
+          showToast("You can compare up to 4 properties.", "warning");
+          return;
+        }
+        compareList.push(id);
+        showToast("Added to comparison tray!", "success");
+      }
+      localStorage.setItem('rf_compare', JSON.stringify(compareList));
+      updateCompareUI();
+    }
+
+    function updateCompareUI() {
+      document.getElementById('header-compare-count').textContent = compareList.length;
+    }
+
+    function openCompareModal() {
+      const body = document.getElementById('compare-modal-body');
+      if (compareList.length === 0) {
+        body.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 2rem;">No properties selected for comparison. Click the compare icon (<i class="fas fa-columns" style="color: #10b981;"></i>) on any card.</p>';
+      } else {
+        const props = PROPERTIES_DATA.filter(p => compareList.includes(p.id));
+        body.innerHTML = `
+          <table class="data-table" style="min-width: 650px;">
+            <thead>
+              <tr>
+                <th>Property</th>
+                ${props.map(p => `<th><a href="javascript:void(0)" onclick="closeModal('compare-modal'); showPropertyDetails(${p.id})">${p.title}</a></th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Monthly Rent</strong></td>
+                ${props.map(p => `<td style="color: var(--accent-emerald); font-weight: 800;">PKR ${formatPKR(p.monthly_rent)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Location</strong></td>
+                ${props.map(p => `<td>${p.area}, ${p.city}</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Bedrooms</strong></td>
+                ${props.map(p => `<td>${p.bedrooms} Beds</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Bathrooms</strong></td>
+                ${props.map(p => `<td>${p.bathrooms} Baths</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Advance &amp; Security</strong></td>
+                ${props.map(p => `<td>${p.advance_payment}</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Furnishing</strong></td>
+                ${props.map(p => `<td>${p.furnished}</td>`).join('')}
+              </tr>
+              <tr>
+                <td><strong>Contact</strong></td>
+                ${props.map(p => `<td><a href="https://wa.me/${p.contact_whatsapp}" target="_blank" style="color: #25D366;"><i class="fab fa-whatsapp"></i> Chat</a></td>`).join('')}
+              </tr>
+            </tbody>
+          </table>
+        `;
+      }
+      openModal('compare-modal');
+    }
+
+    // Appointment Booking Modal
+    function bookViewingModal(id) {
+      closeModal('details-modal');
+      const p = PROPERTIES_DATA.find(x => x.id === id);
+      if (p) document.getElementById('apt-prop-title').textContent = `Booking visit for: ${p.title}`;
+      openModal('appointment-modal');
+    }
+
+    function handleAppointmentSubmit(e) {
+      e.preventDefault();
+      closeModal('appointment-modal');
+      showToast("Viewing appointment requested! The owner will contact you shortly via call/WhatsApp.", "success");
+    }
+
+    // Post Property Handling
+    function handlePostProperty(e) {
+      e.preventDefault();
+      const newProp = {
+        id: PROPERTIES_DATA.length + 1,
+        title: document.getElementById('post-title').value,
+        city: document.getElementById('post-city').value,
+        area: document.getElementById('post-area').value,
+        property_type: document.getElementById('post-type').value,
+        monthly_rent: parseInt(document.getElementById('post-rent').value),
+        bedrooms: parseInt(document.getElementById('post-beds').value),
+        bathrooms: parseInt(document.getElementById('post-baths').value),
+        size: document.getElementById('post-size').value,
+        advance_payment: "2 Months Advance",
+        security_deposit: parseInt(document.getElementById('post-rent').value) * 2,
+        extra_charges: "None",
+        furnished: "Unfurnished",
+        address: document.getElementById('post-area').value + ", " + document.getElementById('post-city').value,
+        description: document.getElementById('post-desc').value || "Recently posted verified rental property on Rent Finder Pakistan.",
+        image: document.getElementById('post-image').value || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+        contact_name: "Property Owner",
+        contact_phone: document.getElementById('post-phone').value,
+        contact_whatsapp: document.getElementById('post-whatsapp').value.replace(/[^0-9]/g, ''),
+        facilities: ["Sui Gas Active", "Sweet Water Line", "Electricity"],
+        is_featured: false
+      };
+
+      PROPERTIES_DATA.unshift(newProp);
+      closeModal('post-modal');
+      applyFilters();
+      showToast("Property listing posted successfully!", "success");
+      scrollToProperties();
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderProperties(PROPERTIES_DATA);
+      updateFavUI();
+      updateCompareUI();
+    });
+  </script>
+</body>
+</html>

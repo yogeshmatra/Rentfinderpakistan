@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}My Listed Properties - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-primary btn-sm"><i class="fas fa-home"></i> My Listings</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-secondary btn-sm"><i class="fas fa-heart"></i> Saved Favorites</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-secondary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-secondary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800;">My Property Listings</h1>
+      <p style="color: var(--text-muted);">Manage your submitted rental properties, check approval status and views.</p>
+    </div>
+    <a href="{{ url_for('post_property') }}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Add New Property
+    </a>
+  </div>
+
+  <div class="data-card">
+    {% if listings %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>City / Location</th>
+              <th>Monthly Rent</th>
+              <th>Moderation Status</th>
+              <th>Total Views</th>
+              <th>Created At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in listings %}
+              <tr>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    {% set imgs = item.images|from_json %}
+                    {% set fimg = imgs[0] if imgs else 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=150&q=80' %}
+                    <img src="{{ fimg }}" alt="{{ item.title }}" style="width: 50px; height: 40px; object-fit: cover; border-radius: var(--radius-sm);">
+                    <div>
+                      <div style="font-weight: 700; color: #fff;">{{ item.title }}</div>
+                      <small style="color: var(--text-dim);">{{ item.property_type }} • {{ item.bedrooms }} Bed</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ item.area }}, {{ item.city }}</td>
+                <td style="color: var(--accent-emerald); font-weight: 700;">PKR {{ item.monthly_rent|format_currency }}</td>
+                <td>
+                  <span class="badge-status {{ item.status }}">
+                    {{ item.status }}
+                  </span>
+                  {% if item.rejection_reason %}
+                    <small style="color: var(--accent-rose); display: block;">{{ item.rejection_reason }}</small>
+                  {% endif %}
+                </td>
+                <td>{{ item.views_count }} views</td>
+                <td>{{ item.created_at }}</td>
+                <td>
+                  {% if item.status == 'approved' %}
+                    <a href="{{ url_for('property_detail', prop_id=item.id) }}" class="btn btn-outline btn-sm" target="_blank">
+                      View Public
+                    </a>
+                  {% else %}
+                    <span style="color: var(--text-dim); font-size: 0.8rem;">Under Review</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 1rem;">
+        <i class="fas fa-home" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">No Properties Listed Yet</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You haven't posted any rental properties yet.</p>
+        <a href="{{ url_for('post_property') }}" class="btn btn-primary">Post Property Now</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Rental Properties - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="section-badge">Specification Comparison</div>
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">Compare Rental Properties</h1>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+      Side-by-side spec and pricing comparison for up to 4 selected rental properties across Pakistan.
+    </p>
+  </div>
+
+  {% if properties %}
+    <div class="data-card" style="overflow-x: auto; padding: 2rem;">
+      <table class="data-table" style="min-width: 800px;">
+        <thead>
+          <tr>
+            <th style="width: 220px; font-size: 0.9rem; color: #fff;">Features / Properties</th>
+            {% for p in properties %}
+              <th style="text-align: center; min-width: 240px;">
+                <div style="position: relative; margin-bottom: 0.75rem;">
+                  {% set imgs = p.images|from_json %}
+                  {% set fimg = imgs[0] if imgs else 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80' %}
+                  <img src="{{ fimg }}" alt="{{ p.title }}" style="width: 100%; height: 140px; object-fit: cover; border-radius: var(--radius-md);">
+                  <button onclick="toggleCompare('{{ p.id }}'); window.location.reload();" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.7); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; cursor: pointer;" title="Remove from compare">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <a href="{{ url_for('property_detail', prop_id=p.id) }}" style="color: #fff; font-size: 1rem; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {{ p.title }}
+                </a>
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Monthly Rent</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center; color: var(--accent-emerald); font-weight: 800; font-size: 1.15rem;">
+                PKR {{ p.monthly_rent|format_currency }}
+              </td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>City &amp; Area</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.area }}, {{ p.city }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Property Type</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;"><span class="badge-type">{{ p.property_type }}</span></td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Advance Payment</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.advance_payment or '2 Months' }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Security Deposit</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center; color: var(--accent-gold); font-weight: 700;">
+                PKR {{ p.security_deposit|format_currency }}
+              </td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Extra / Utility Charges</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center; font-size: 0.85rem;">{{ p.extra_charges or 'None' }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Bedrooms</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center; font-weight: 700;">{{ p.bedrooms }} Beds</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Bathrooms</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.bathrooms }} Baths</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Size</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.size }} {{ p.size_unit }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Furnishing</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.furnished }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Parking Spaces</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">{{ p.parking_spaces }} Vehicle(s)</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Owner / Agent Contact</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">
+                <div style="font-weight: 600;">{{ p.contact_name }}</div>
+                <a href="tel:{{ p.contact_phone }}" style="color: var(--accent-cyan); font-size: 0.85rem;">{{ p.contact_phone }}</a>
+              </td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td><strong>Action</strong></td>
+            {% for p in properties %}
+              <td style="text-align: center;">
+                <a href="{{ url_for('property_detail', prop_id=p.id) }}" class="btn btn-primary btn-sm" style="width: 100%;">
+                  View Full Details
+                </a>
+              </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 4rem 2rem; text-align: center; max-width: 600px; margin: 0 auto;">
+      <div style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1.5rem;"><i class="fas fa-columns"></i></div>
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">No Properties in Comparison Tray</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">
+        Click the compare icon (<i class="fas fa-columns" style="color: var(--accent-emerald);"></i>) on any property card or detail page to add up to 4 listings for a side-by-side comparison.
+      </p>
+      <a href="{{ url_for('properties') }}" class="btn btn-primary">
+        Browse Properties
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

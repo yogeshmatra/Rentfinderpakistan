@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Rental Properties in Pakistan - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <!-- Breadcrumb & Header -->
+  <div style="margin-bottom: 2rem;">
+    <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem;">
+      <a href="{{ url_for('index') }}" style="color: var(--accent-emerald);">Home</a> / <span>Rental Properties</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 2.2rem; font-weight: 800;">
+          Rental Properties in {% if selected_city %}{{ selected_city }}{% else %}Pakistan{% endif %}
+        </h1>
+        <p style="color: var(--text-muted);">
+          Found <strong style="color: var(--accent-emerald);">{{ total_count }}</strong> verified rental properties matching your criteria
+        </p>
+      </div>
+
+      <!-- Sort Controls -->
+      <form method="GET" action="{{ url_for('properties') }}" id="sort-form" style="display: flex; align-items: center; gap: 0.75rem;">
+        <!-- Preserve other query parameters -->
+        <input type="hidden" name="city" value="{{ selected_city }}">
+        <input type="hidden" name="area" value="{{ selected_area }}">
+        <input type="hidden" name="type" value="{{ selected_type }}">
+        <input type="hidden" name="min_rent" value="{{ min_rent }}">
+        <input type="hidden" name="max_rent" value="{{ max_rent }}">
+        <input type="hidden" name="bedrooms" value="{{ selected_bedrooms }}">
+        <input type="hidden" name="furnished" value="{{ selected_furnished }}">
+
+        <label style="font-size: 0.85rem; color: var(--text-dim); font-weight: 600;">Sort By:</label>
+        <select name="sort" class="admin-select" style="width: auto; padding: 0.5rem 1rem;" onchange="this.form.submit()">
+          <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest First</option>
+          <option value="lowest" {% if selected_sort == 'lowest' %}selected{% endif %}>Lowest Rent</option>
+          <option value="highest" {% if selected_sort == 'highest' %}selected{% endif %}>Highest Rent</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <!-- Search & Layout Grid -->
+  <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem; align-items: start;">
+    <!-- Filter Sidebar -->
+    <aside style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(16px); position: sticky; top: calc(var(--header-height) + 1.5rem);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-glass);">
+        <h3 style="font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-sliders-h" style="color: var(--accent-emerald);"></i> Filters
+        </h3>
+        <a href="{{ url_for('properties') }}" style="font-size: 0.8rem; color: var(--accent-rose);">Reset All</a>
+      </div>
+
+      <form action="{{ url_for('properties') }}" method="GET">
+        <!-- City Selector -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-map-marker-alt" style="color: var(--accent-emerald);"></i> City</label>
+          <select name="city" class="admin-select">
+            <option value="">All Pakistan Cities</option>
+            {% for c in available_cities %}
+              <option value="{{ c }}" {% if selected_city == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Area / Locality -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-search-location"></i> Area / Sector</label>
+          <input type="text" name="area" value="{{ selected_area }}" class="admin-input" placeholder="e.g. DHA, Gulberg, Clifton...">
+        </div>
+
+        <!-- Property Type -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-building"></i> Property Type</label>
+          <select name="type" class="admin-select">
+            <option value="">All Types</option>
+            {% for t in available_types %}
+              <option value="{{ t }}" {% if selected_type == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Rent Budget Range -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-money-bill-wave"></i> Monthly Rent (PKR)</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <input type="number" name="min_rent" value="{{ min_rent }}" class="admin-input" placeholder="Min Rent" step="5000">
+            <input type="number" name="max_rent" value="{{ max_rent }}" class="admin-input" placeholder="Max Rent" step="5000">
+          </div>
+        </div>
+
+        <!-- Bedrooms -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-bed"></i> Bedrooms</label>
+          <select name="bedrooms" class="admin-select">
+            <option value="">Any Beds</option>
+            <option value="1" {% if selected_bedrooms == '1' %}selected{% endif %}>1+ Bed</option>
+            <option value="2" {% if selected_bedrooms == '2' %}selected{% endif %}>2+ Beds</option>
+            <option value="3" {% if selected_bedrooms == '3' %}selected{% endif %}>3+ Beds</option>
+            <option value="4" {% if selected_bedrooms == '4' %}selected{% endif %}>4+ Beds</option>
+            <option value="5" {% if selected_bedrooms == '5' %}selected{% endif %}>5+ Beds</option>
+          </select>
+        </div>
+
+        <!-- Furnished Status -->
+        <div class="admin-form-group">
+          <label><i class="fas fa-couch"></i> Furnishing</label>
+          <select name="furnished" class="admin-select">
+            <option value="All">All Types</option>
+            <option value="Furnished" {% if selected_furnished == 'Furnished' %}selected{% endif %}>Furnished</option>
+            <option value="Semi-Furnished" {% if selected_furnished == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
+            <option value="Unfurnished" {% if selected_furnished == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+          <i class="fas fa-filter"></i> Apply Filters
+        </button>
+      </form>
+
+      <!-- Sidebar Ad Slot -->
+      {% if sidebar_ad %}
+      <div style="margin-top: 2rem; border-top: 1px solid var(--border-glass); padding-top: 1.5rem;">
+        <span style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem;">Sponsored Partner</span>
+        <a href="{{ sidebar_ad.target_url }}" target="_blank" style="display: block; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-glass);">
+          <img src="{{ sidebar_ad.banner_image }}" alt="{{ sidebar_ad.title }}" style="width: 100%; height: auto;">
+          <div style="padding: 0.75rem; background: var(--bg-surface-elevated); font-size: 0.8rem; font-weight: 600;">
+            {{ sidebar_ad.title }}
+          </div>
+        </a>
+      </div>
+      {% endif %}
+    </aside>
+
+    <!-- Properties Listings Results -->
+    <main>
+      {% if properties %}
+        <div class="properties-grid">
+          {% for prop in properties %}
+            {% set imgs = prop.images|from_json %}
+            {% set first_img = imgs[0] if imgs else 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80' %}
+            <div class="property-card">
+              <div class="card-media">
+                <img src="{{ first_img }}" alt="{{ prop.title }}" class="card-img" loading="lazy">
+                <div class="media-badges">
+                  {% if prop.is_featured %}<span class="badge-featured">Featured</span>{% endif %}
+                  <span class="badge-type">{{ prop.property_type }}</span>
+                </div>
+                <button type="button" class="btn-fav" data-prop-id="{{ prop.id }}" title="Save to favorites">
+                  <i class="far fa-heart"></i>
+                </button>
+                <div class="card-price-tag">
+                  PKR {{ prop.monthly_rent|format_currency }} <small>/ month</small>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="card-location">
+                  <i class="fas fa-map-marker-alt"></i> {{ prop.area }}, {{ prop.city }}
+                </div>
+                <h3 class="card-title">
+                  <a href="{{ url_for('property_detail', prop_id=prop.id) }}">{{ prop.title }}</a>
+                </h3>
+
+                <div class="card-specs">
+                  {% if prop.bedrooms > 0 %}
+                    <div class="spec-item"><i class="fas fa-bed"></i> {{ prop.bedrooms }} Beds</div>
+                  {% endif %}
+                  {% if prop.bathrooms > 0 %}
+                    <div class="spec-item"><i class="fas fa-bath"></i> {{ prop.bathrooms }} Baths</div>
+                  {% endif %}
+                  <div class="spec-item"><i class="fas fa-ruler-combined"></i> {{ prop.size }} {{ prop.size_unit }}</div>
+                  <div class="spec-item"><i class="fas fa-couch"></i> {{ prop.furnished }}</div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="card-owner-info">
+                    <i class="fas fa-user-check" style="color: var(--accent-emerald);"></i>
+                    <span>{{ prop.contact_name or 'Verified Landlord' }}</span>
+                  </div>
+                  <div class="card-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="toggleCompare('{{ prop.id }}')" title="Compare this property">
+                      <i class="fas fa-columns"></i>
+                    </button>
+                    <a href="{{ url_for('property_detail', prop_id=prop.id) }}" class="btn btn-primary btn-sm">
+                      Details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- No Results Fallback -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 4rem 2rem; text-align: center;">
+          <div style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1.5rem;"><i class="fas fa-search-minus"></i></div>
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">No Matching Properties Found</h2>
+          <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem;">
+            We couldn't find any approved rental listings matching your exact filters. Try broadening your budget or searching in a nearby area.
+          </p>
+          <a href="{{ url_for('properties') }}" class="btn btn-secondary">
+            Clear All Filters
+          </a>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}

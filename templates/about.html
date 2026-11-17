@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 3rem); padding-bottom: 5rem; max-width: 960px;">
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <div class="section-badge">Our Mission &amp; Story</div>
+    <h1 style="font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0;">Transforming Rentals in Pakistan</h1>
+    <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto; font-size: 1.1rem;">
+      We are on a mission to build Pakistan's most transparent, high-tech, and scam-free rental property marketplace.
+    </p>
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 3rem; backdrop-filter: blur(20px); margin-bottom: 3rem; line-height: 1.8; color: var(--text-muted);">
+    <h2 style="color: #fff; font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem;">Who We Are</h2>
+    <p style="margin-bottom: 1.5rem;">
+      <strong>Rent Finder Pakistan</strong> was founded to solve a massive daily problem faced by millions of Pakistani families, students, and professionals: the frustrating and opaque process of finding a house, flat, or commercial space for rent.
+    </p>
+    <p style="margin-bottom: 1.5rem;">
+      Traditional property portals treat rental listings as an afterthought behind high-value plot sales. We are 100% dedicated to rentals. Every feature on our platform—from Sui gas pressure indicators and water boring notes to loadshedding backup details and advance payment terms—is tailored specifically for Pakistani renters and landlords.
+    </p>
+
+    <h2 style="color: #fff; font-size: 1.6rem; font-weight: 700; margin: 2rem 0 1rem;">The Three Pillars of Rent Finder Pakistan</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+      <div style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-glass);">
+        <i class="fas fa-user-check" style="color: var(--accent-emerald); font-size: 1.8rem; margin-bottom: 0.75rem;"></i>
+        <h4 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Human Moderation</h4>
+        <p style="font-size: 0.9rem;">No auto-publishing without verification. Our team manually approves listings to ensure verified phone numbers and accurate rents.</p>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-glass);">
+        <i class="fas fa-robot" style="color: var(--accent-cyan); font-size: 1.8rem; margin-bottom: 0.75rem;"></i>
+        <h4 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Gemini AI Assistant</h4>
+        <p style="font-size: 0.9rem;">Our conversational AI chatbot understands English, Urdu and Roman Urdu to match renters with the best properties in seconds.</p>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-glass);">
+        <i class="fas fa-handshake" style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 0.75rem;"></i>
+        <h4 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Direct Connections</h4>
+        <p style="font-size: 0.9rem;">Instant WhatsApp chat and direct phone calling with landlords. Zero hidden intermediary commission fees.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Office & Team Info -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-building" style="color: var(--accent-emerald); margin-right: 8px;"></i> Head Office Karachi</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">{{ site_settings.get('office_address') }}</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Helpline: {{ site_settings.get('contact_phone') }}</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Email: {{ site_settings.get('contact_email') }}</p>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-map-marked-alt" style="color: var(--accent-cyan); margin-right: 8px;"></i> Regional Coverage</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Sindh: Karachi, Hyderabad, Sukkur</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Punjab: Lahore, Rawalpindi, Faisalabad, Multan</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Federal &amp; KP/Balochistan: Islamabad, Peshawar, Quetta</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

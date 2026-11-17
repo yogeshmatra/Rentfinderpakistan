@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Property Enquiries - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> My Listings</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-secondary btn-sm"><i class="fas fa-heart"></i> Saved Favorites</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-primary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-secondary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-secondary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 800;">Messages &amp; Property Inquiries</h1>
+    <p style="color: var(--text-muted);">Review customer leads received on your properties and inquiries you sent to other landlords.</p>
+  </div>
+
+  <!-- Inquiries Received on Your Properties (If Landlord) -->
+  <div class="data-card" style="margin-bottom: 2.5rem;">
+    <div class="data-card-header">
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-emerald);">
+        <i class="fas fa-inbox"></i> Inquiries Received on Your Listings
+      </h3>
+    </div>
+
+    {% if received %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Tenant Name</th>
+              <th>Contact Details</th>
+              <th>Message</th>
+              <th>Date Received</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in received %}
+              <tr>
+                <td><strong>{{ item.prop_title }}</strong></td>
+                <td>{{ item.sender_name }}</td>
+                <td>
+                  <div><i class="fas fa-phone-alt" style="color: var(--accent-emerald); font-size: 0.8rem;"></i> {{ item.sender_phone }}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);">{{ item.sender_email }}</div>
+                </td>
+                <td style="max-width: 300px;">{{ item.message }}</td>
+                <td>{{ item.created_at }}</td>
+                <td>
+                  <a href="https://wa.me/{{ item.sender_phone|replace(' ', '')|replace('+', '') }}" target="_blank" class="btn btn-primary btn-sm" style="background: #25D366;">
+                    <i class="fab fa-whatsapp"></i> Reply
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No incoming inquiries on your properties yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Outgoing Inquiries Sent by You -->
+  <div class="data-card">
+    <div class="data-card-header">
+      <h3 style="font-size: 1.25rem; font-weight: 700;">
+        <i class="fas fa-paper-plane"></i> Inquiries Sent to Other Landlords
+      </h3>
+    </div>
+
+    {% if sent %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>City</th>
+              <th>Your Message</th>
+              <th>Sent On</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in sent %}
+              <tr>
+                <td><strong>{{ item.prop_title }}</strong></td>
+                <td>{{ item.prop_city }}</td>
+                <td>{{ item.message }}</td>
+                <td>{{ item.created_at }}</td>
+                <td><span class="badge-status approved">Delivered to Landlord</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">You haven't sent any inquiries yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

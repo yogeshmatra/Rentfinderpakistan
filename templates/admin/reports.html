@@ -1,0 +1,71 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Reported Property Moderation - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-topbar">
+  <div class="topbar-title">
+    <h1>Reported Property Listings</h1>
+    <p>Investigate complaints submitted by users regarding fraud, inaccurate rent, or duplicate listings.</p>
+  </div>
+</div>
+
+<div class="data-card">
+  {% if reports %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>City</th>
+            <th>Report Reason</th>
+            <th>Details &amp; Complaint</th>
+            <th>Reporter Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reports %}
+            <tr>
+              <td><strong>{{ r.prop_title }}</strong></td>
+              <td>{{ r.prop_city }}</td>
+              <td><span class="badge-status rejected">{{ r.reason }}</span></td>
+              <td style="max-width: 320px;">{{ r.details }}</td>
+              <td>{{ r.reporter_email or 'Anonymous' }}</td>
+              <td><span class="badge-status {{ r.status }}">{{ r.status }}</span></td>
+              <td>
+                <div style="display: flex; gap: 0.5rem;">
+                  <!-- Dismiss -->
+                  <form action="{{ url_for('admin_resolve_report', report_id=r.id) }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="dismiss">
+                    <button type="submit" class="btn btn-secondary btn-sm" title="Dismiss Report">
+                      Dismiss
+                    </button>
+                  </form>
+
+                  <!-- Suspend Listing -->
+                  <form action="{{ url_for('admin_resolve_report', report_id=r.id) }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="suspend_property">
+                    <button type="submit" class="btn btn-sm" style="background: var(--accent-rose); color: #fff;" title="Suspend Property">
+                      Suspend Property
+                    </button>
+                  </form>
+
+                  <a href="{{ url_for('property_detail', prop_id=r.property_id) }}" class="btn btn-outline btn-sm" target="_blank">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: var(--text-dim); text-align: center; padding: 3rem;">
+      <i class="fas fa-check-circle" style="color: var(--accent-emerald); font-size: 1.5rem; margin-right: 6px;"></i> No active user reports. All listings are clean!
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing &amp; Monetization Plans - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <div class="section-badge">Monetization &amp; Growth</div>
+    <h1 style="font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0;">Plans &amp; Promotion Packages</h1>
+    <p style="color: var(--text-muted); max-width: 620px; margin: 0 auto; font-size: 1.05rem;">
+      Whether you are an individual landlord renting out a flat or a top real estate agency in Pakistan, choose the package that fits your goals.
+    </p>
+  </div>
+
+  <!-- Pricing Cards Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+    <!-- Plan 1: Free Starter -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem 2rem; display: flex; flex-direction: column; backdrop-filter: blur(16px); position: relative;">
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Free Landlord</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">Perfect for owners renting out a single house or flat.</p>
+      
+      <div style="margin-bottom: 2rem;">
+        <span style="font-size: 2.5rem; font-weight: 800; color: #fff;">PKR 0</span>
+        <span style="color: var(--text-muted);">/ forever</span>
+      </div>
+
+      <ul style="display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-muted); flex: 1;">
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> 2 Active Property Listings</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Standard Search Placement</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Direct Phone &amp; WhatsApp Inquiries</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Viewing Appointment Manager</li>
+        <li style="color: var(--text-dim);"><i class="fas fa-times" style="margin-right: 8px;"></i> No Featured Badge</li>
+      </ul>
+
+      <a href="{{ url_for('post_property') }}" class="btn btn-secondary" style="width: 100%;">
+        Get Started Free
+      </a>
+    </div>
+
+    <!-- Plan 2: Silver Landlord (Popular) -->
+    <div style="background: var(--bg-card); border: 2px solid var(--accent-emerald); border-radius: var(--radius-xl); padding: 2.5rem 2rem; display: flex; flex-direction: column; backdrop-filter: blur(16px); position: relative; box-shadow: var(--shadow-glow-emerald);">
+      <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--accent-emerald); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.9rem; border-radius: var(--radius-full); text-transform: uppercase;">
+        Most Popular
+      </div>
+
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">Silver Landlord</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">For active property owners managing multiple units.</p>
+      
+      <div style="margin-bottom: 2rem;">
+        <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-emerald);">PKR 3,500</span>
+        <span style="color: var(--text-muted);">/ month</span>
+      </div>
+
+      <ul style="display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-main); flex: 1;">
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> <strong>10 Active Property Listings</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> <strong>2 Featured Home Page Badges</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> 3x More Tenant Inquiries</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Instant WhatsApp Lead Notifications</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Priority Admin Approval (within 30 mins)</li>
+      </ul>
+
+      <button class="btn btn-primary" style="width: 100%;" onclick="openPaymentModal('Silver Landlord', 3500)">
+        Subscribe via Easypaisa / JazzCash
+      </button>
+    </div>
+
+    <!-- Plan 3: Gold Landlord -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem 2rem; display: flex; flex-direction: column; backdrop-filter: blur(16px); position: relative;">
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Gold Landlord</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">High-frequency investors and apartment building owners.</p>
+      
+      <div style="margin-bottom: 2rem;">
+        <span style="font-size: 2.5rem; font-weight: 800; color: #fff;">PKR 7,500</span>
+        <span style="color: var(--text-muted);">/ month</span>
+      </div>
+
+      <ul style="display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-muted); flex: 1;">
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> <strong>25 Active Property Listings</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> <strong>5 Featured Badges</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Verified Landlord Trust Badge</li>
+        <li><i class="fas fa-check" style="color: var(--accent-emerald); margin-right: 8px;"></i> Dedicated Phone Account Manager</li>
+      </ul>
+
+      <button class="btn btn-secondary" style="width: 100%; border-color: var(--accent-gold); color: var(--accent-gold);" onclick="openPaymentModal('Gold Landlord', 7500)">
+        Subscribe via Easypaisa / JazzCash
+      </button>
+    </div>
+
+    <!-- Plan 4: Platinum Agency -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem 2rem; display: flex; flex-direction: column; backdrop-filter: blur(16px); position: relative;">
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent-cyan);">Platinum Agency</h3>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">For real estate agencies &amp; commercial brokers.</p>
+      
+      <div style="margin-bottom: 2rem;">
+        <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-cyan);">PKR 15,000</span>
+        <span style="color: var(--text-muted);">/ month</span>
+      </div>
+
+      <ul style="display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 2.5rem; font-size: 0.9rem; color: var(--text-muted); flex: 1;">
+        <li><i class="fas fa-check" style="color: var(--accent-cyan); margin-right: 8px;"></i> <strong>50+ Active Listings</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-cyan); margin-right: 8px;"></i> <strong>10 Featured Spotlight Listings</strong></li>
+        <li><i class="fas fa-check" style="color: var(--accent-cyan); margin-right: 8px;"></i> Certified Broker Agency Badge</li>
+        <li><i class="fas fa-check" style="color: var(--accent-cyan); margin-right: 8px;"></i> Agency Banner in City Search</li>
+        <li><i class="fas fa-check" style="color: var(--accent-cyan); margin-right: 8px;"></i> Direct CRM Integration &amp; Leads Export</li>
+      </ul>
+
+      <button class="btn btn-cyan" style="width: 100%;" onclick="openPaymentModal('Platinum Agency', 15000)">
+        Subscribe Agency Plan
+      </button>
+    </div>
+  </div>
+
+  <!-- Featured Listing One-Time Addon Card -->
+  <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(16, 185, 129, 0.1)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-xl); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; margin-bottom: 4rem;">
+    <div>
+      <span class="badge-featured" style="margin-bottom: 0.5rem; display: inline-block;">Single Property Add-on</span>
+      <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem;">Spotlight Featured Listing (30 Days)</h3>
+      <p style="color: var(--text-muted); max-width: 580px; font-size: 0.95rem;">
+        Promote your property to the very top of the homepage and city search results. Receive up to 5x more viewing requests within 48 hours.
+      </p>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 0.5rem;">PKR 3,500 <small style="font-size: 0.9rem; color: var(--text-muted);">/ listing</small></div>
+      <button class="btn btn-primary" onclick="openPaymentModal('featured_listing', 3500)">
+        <i class="fas fa-star"></i> Feature My Property
+      </button>
+    </div>
+  </div>
+
+  <!-- Pakistani Payment Methods Instructions -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem;">
+    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; text-align: center;">Official Pakistani Payment Methods</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+      <!-- Easypaisa -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: #00A651; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800;">EP</div>
+          <h4 style="font-size: 1.1rem; font-weight: 700;">Easypaisa</h4>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">Account Number:</p>
+        <strong style="color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">{{ site_settings.get('easypaisa_number', '03008291034') }}</strong>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">Account Title:</p>
+        <strong style="color: var(--accent-emerald);">{{ site_settings.get('easypaisa_title', 'Rent Finder Pakistan Pvt Ltd') }}</strong>
+      </div>
+
+      <!-- JazzCash -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: #ED1C24; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800;">JC</div>
+          <h4 style="font-size: 1.1rem; font-weight: 700;">JazzCash</h4>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">Mobile Account:</p>
+        <strong style="color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">{{ site_settings.get('jazzcash_number', '03019988776') }}</strong>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">Account Title:</p>
+        <strong style="color: var(--accent-emerald);">{{ site_settings.get('jazzcash_title', 'Rent Finder Pakistan') }}</strong>
+      </div>
+
+      <!-- Bank Transfer -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: #2563EB; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"><i class="fas fa-university"></i></div>
+          <h4 style="font-size: 1.1rem; font-weight: 700;">Meezan Bank Ltd</h4>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">IBAN:</p>
+        <strong style="color: #fff; font-size: 0.95rem; display: block; margin-bottom: 0.5rem;">{{ site_settings.get('bank_iban', 'PK45MEZN0001020304050607') }}</strong>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">Title:</p>
+        <strong style="color: var(--accent-emerald);">{{ site_settings.get('bank_title', 'Rent Finder Pakistan (Pvt) Limited') }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     PAYMENT PROOF SUBMISSION MODAL
+     ========================================================================== -->
+<div id="payment-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem; max-width: 520px; width: 100%; position: relative;">
+    <button onclick="document.getElementById('payment-modal').style.display='none'" style="position: absolute; top: 1.2rem; right: 1.2rem; background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">
+      <i class="fas fa-times"></i>
+    </button>
+    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem;">Submit Payment Verification</h3>
+    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">
+      After transferring via Easypaisa, JazzCash, or Bank, enter your Transaction ID (TID) below.
+    </p>
+
+    <form id="payment-submit-form">
+      <input type="hidden" name="payment_type" id="pay-type-input" value="featured_listing">
+      <input type="hidden" name="amount" id="pay-amount-input" value="3500">
+
+      <div class="admin-form-group">
+        <label>Selected Plan / Feature</label>
+        <input type="text" id="pay-plan-display" class="admin-input" readonly style="background: rgba(255,255,255,0.05); color: var(--accent-emerald); font-weight: 700;">
+      </div>
+
+      <div class="admin-form-group">
+        <label>Payment Method Used *</label>
+        <select name="payment_method" class="admin-select" required>
+          <option value="Easypaisa">Easypaisa</option>
+          <option value="JazzCash">JazzCash</option>
+          <option value="Bank Transfer">Meezan Bank / Bank Transfer</option>
+          <option value="Debit / Credit Card">Debit / Credit Card</option>
+        </select>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Your Account Number / Sender Mobile</label>
+        <input type="text" name="account_number" class="admin-input" placeholder="e.g. 0300 1234567" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Transaction ID / Reference Number (TID) *</label>
+        <input type="text" name="transaction_id" class="admin-input" placeholder="e.g. 88291048291" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Property ID (If featuring a specific listing)</label>
+        <input type="number" name="property_id" class="admin-input" placeholder="e.g. 1">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+        <i class="fas fa-check-circle"></i> Submit Payment for Instant Verification
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function openPaymentModal(planName, amount) {
+    document.getElementById('pay-plan-display').value = `${planName} (PKR ${Number(amount).toLocaleString()})`;
+    document.getElementById('pay-type-input').value = planName.toLowerCase().includes('featured') ? 'featured_listing' : 'subscription';
+    document.getElementById('pay-amount-input').value = amount;
+    document.getElementById('payment-modal').style.display = 'flex';
+  }
+
+  document.getElementById('payment-submit-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    try {
+      const response = await fetch('/api/payments/submit', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('payment-modal').style.display = 'none';
+        showToast(data.message, 'success');
+      } else {
+        showToast(data.message || 'Payment submission failed. Check details.', 'danger');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error submitting payment.', 'danger');
+    }
+  });
+</script>
+{% endblock %}

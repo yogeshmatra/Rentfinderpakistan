@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Favorite Properties - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> My Listings</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-primary btn-sm"><i class="fas fa-heart"></i> Saved Favorites</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-secondary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-secondary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 800;">Saved Favourite Properties</h1>
+    <p style="color: var(--text-muted);">Quickly review, compare, or contact owners of properties you have bookmarked.</p>
+  </div>
+
+  {% if favorites %}
+    <div class="properties-grid">
+      {% for prop in favorites %}
+        {% set imgs = prop.images|from_json %}
+        {% set first_img = imgs[0] if imgs else 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80' %}
+        <div class="property-card">
+          <div class="card-media">
+            <img src="{{ first_img }}" alt="{{ prop.title }}" class="card-img" loading="lazy">
+            <div class="media-badges">
+              <span class="badge-type">{{ prop.property_type }}</span>
+            </div>
+            <button type="button" class="btn-fav active" data-prop-id="{{ prop.id }}" title="Remove from favorites">
+              <i class="fas fa-heart text-danger"></i>
+            </button>
+            <div class="card-price-tag">
+              PKR {{ prop.monthly_rent|format_currency }} <small>/ month</small>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-location">
+              <i class="fas fa-map-marker-alt"></i> {{ prop.area }}, {{ prop.city }}
+            </div>
+            <h3 class="card-title">
+              <a href="{{ url_for('property_detail', prop_id=prop.id) }}">{{ prop.title }}</a>
+            </h3>
+
+            <div class="card-specs">
+              <div class="spec-item"><i class="fas fa-bed"></i> {{ prop.bedrooms }} Beds</div>
+              <div class="spec-item"><i class="fas fa-bath"></i> {{ prop.bathrooms }} Baths</div>
+              <div class="spec-item"><i class="fas fa-ruler-combined"></i> {{ prop.size }} {{ prop.size_unit }}</div>
+            </div>
+
+            <div class="card-footer">
+              <a href="{{ url_for('property_detail', prop_id=prop.id) }}" class="btn btn-primary btn-sm" style="width: 100%;">
+                View Details &amp; Contact
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="data-card" style="text-align: center; padding: 4rem 1rem;">
+      <i class="far fa-heart" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+      <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">No Saved Properties Yet</h3>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Click the heart icon on any listing to save it here for later.</p>
+      <a href="{{ url_for('properties') }}" class="btn btn-primary">Browse Properties</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

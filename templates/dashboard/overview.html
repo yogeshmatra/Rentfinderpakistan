@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Overview - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem;">
+  <!-- Dashboard Navigation Pills -->
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> My Listings ({{ stats.listings }})</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-secondary btn-sm"><i class="fas fa-heart"></i> Saved Favorites ({{ stats.saved }})</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-secondary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-secondary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <!-- Welcome Banner -->
+  <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 200, 255, 0.15)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-xl); padding: 2rem 2.5rem; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <div style="font-size: 0.85rem; color: var(--accent-emerald); font-weight: 700; text-transform: uppercase;">
+        Account Type: {{ user.role|upper }}
+      </div>
+      <h1 style="font-size: 2rem; font-weight: 800; margin: 0.25rem 0;">Welcome, {{ user.name }}!</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Manage your rental properties, viewing schedules and inquiries in one dashboard.</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+      <a href="{{ url_for('post_property') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Post New Property
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline" style="border-color: var(--accent-rose); color: var(--accent-rose);">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-home"></i></div>
+      <div class="stat-info">
+        <h3>{{ stats.listings }}</h3>
+        <p>Active Listings</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon rose"><i class="fas fa-heart"></i></div>
+      <div class="stat-info">
+        <h3>{{ stats.saved }}</h3>
+        <p>Saved Properties</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon cyan"><i class="fas fa-envelope-open-text"></i></div>
+      <div class="stat-info">
+        <h3>{{ stats.enquiries }}</h3>
+        <p>Total Enquiries</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-calendar-check"></i></div>
+      <div class="stat-info">
+        <h3>{{ stats.appointments }}</h3>
+        <p>Viewings Booked</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Status Banner (If Active) -->
+  {% if active_sub %}
+    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--accent-emerald); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge-featured" style="margin-bottom: 0.25rem; display: inline-block;">Active Subscription</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff;">{{ active_sub.plan_name }}</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Valid until {{ active_sub.expires_at }} • {{ active_sub.listing_limit }} max listings</p>
+      </div>
+      <a href="{{ url_for('pricing') }}" class="btn btn-secondary btn-sm">Upgrade Plan</a>
+    </div>
+  {% else %}
+    <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h4 style="font-weight: 700; color: var(--accent-gold);">Upgrade to Silver or Gold Landlord</h4>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Get featured homepage badges and receive 3x more direct tenant inquiries!</p>
+      </div>
+      <a href="{{ url_for('pricing') }}" class="btn btn-primary btn-sm">View Plans</a>
+    </div>
+  {% endif %}
+
+  <!-- Recent Enquiries Table -->
+  <div class="data-card">
+    <div class="data-card-header">
+      <h3 style="font-size: 1.2rem; font-weight: 700;">Recent Enquiries Sent</h3>
+      <a href="{{ url_for('dashboard_enquiries') }}" style="color: var(--accent-emerald); font-size: 0.85rem;">View All</a>
+    </div>
+
+    {% if recent_enquiries %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Your Message</th>
+              <th>Date Sent</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for eq in recent_enquiries %}
+              <tr>
+                <td><strong>{{ eq.property_title }}</strong></td>
+                <td style="max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ eq.message }}</td>
+                <td>{{ eq.created_at }}</td>
+                <td><span class="badge-status approved">Delivered</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No enquiries sent yet. Browse properties and send direct messages to owners.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

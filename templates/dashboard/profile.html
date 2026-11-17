@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem; max-width: 720px;">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="{{ url_for('dashboard_listings') }}" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> My Listings</a>
+    <a href="{{ url_for('dashboard_favorites') }}" class="btn btn-secondary btn-sm"><i class="fas fa-heart"></i> Saved Favorites</a>
+    <a href="{{ url_for('dashboard_enquiries') }}" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Enquiries</a>
+    <a href="{{ url_for('dashboard_appointments') }}" class="btn btn-secondary btn-sm"><i class="fas fa-calendar-alt"></i> Appointments</a>
+    <a href="{{ url_for('dashboard_profile') }}" class="btn btn-primary btn-sm"><i class="fas fa-user-cog"></i> Profile Settings</a>
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem; backdrop-filter: blur(20px);">
+    <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem;">
+      <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff;">
+        <i class="fas fa-user"></i>
+      </div>
+      <div>
+        <h2 style="font-size: 1.5rem; font-weight: 800;">{{ user.name }}</h2>
+        <span class="badge-status approved" style="margin-top: 0.25rem;">{{ user.role|upper }}</span>
+        {% if user.is_verified %}
+          <span class="badge-status" style="background: rgba(0,200,255,0.15); color: var(--accent-cyan);"><i class="fas fa-check-circle"></i> Verified</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('dashboard_profile') }}">
+      <div class="admin-form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" class="admin-input" value="{{ user.name }}" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Email Address (Cannot be changed)</label>
+        <input type="email" class="admin-input" value="{{ user.email }}" readonly style="background: rgba(255,255,255,0.03); color: var(--text-dim);">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="admin-form-group">
+          <label>Calling Phone Number</label>
+          <input type="tel" name="phone" class="admin-input" value="{{ user.phone or '' }}" placeholder="+92 300 1234567">
+        </div>
+
+        <div class="admin-form-group">
+          <label>WhatsApp Number</label>
+          <input type="tel" name="whatsapp" class="admin-input" value="{{ user.whatsapp or '' }}" placeholder="+92 300 1234567">
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Base City</label>
+        <select name="city" class="admin-select">
+          <option value="Karachi" {% if user.city == 'Karachi' %}selected{% endif %}>Karachi</option>
+          <option value="Lahore" {% if user.city == 'Lahore' %}selected{% endif %}>Lahore</option>
+          <option value="Islamabad" {% if user.city == 'Islamabad' %}selected{% endif %}>Islamabad</option>
+          <option value="Rawalpindi" {% if user.city == 'Rawalpindi' %}selected{% endif %}>Rawalpindi</option>
+          <option value="Hyderabad" {% if user.city == 'Hyderabad' %}selected{% endif %}>Hyderabad</option>
+          <option value="Multan" {% if user.city == 'Multan' %}selected{% endif %}>Multan</option>
+          <option value="Faisalabad" {% if user.city == 'Faisalabad' %}selected{% endif %}>Faisalabad</option>
+        </select>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Landlord / Agent Bio (Displayed on your property listings)</label>
+        <textarea name="bio" class="admin-textarea" rows="3" placeholder="Tell tenants about your agency or property management background...">{{ user.bio or '' }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+        Save Profile Changes
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

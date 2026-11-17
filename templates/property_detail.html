@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}{{ property.title }} - Rent in {{ property.area }}, {{ property.city }} | Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+{% set imgs = property.images|from_json %}
+{% set facilities = property.facilities|from_json %}
+{% set first_img = imgs[0] if imgs else 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80' %}
+
+<div class="container" style="padding-top: calc(var(--header-height) + 1.5rem); padding-bottom: 5rem;">
+  <!-- Breadcrumbs -->
+  <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem;">
+    <a href="{{ url_for('index') }}" style="color: var(--accent-emerald);">Home</a> / 
+    <a href="{{ url_for('properties', city=property.city) }}" style="color: var(--accent-emerald);">{{ property.city }}</a> / 
+    <span>{{ property.area }}</span>
+  </div>
+
+  <!-- Header Title & Action Bar -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+    <div>
+      <div style="display: flex; gap: 0.6rem; margin-bottom: 0.6rem;">
+        {% if property.is_featured %}<span class="badge-featured">Featured</span>{% endif %}
+        <span class="badge-type">{{ property.property_type }}</span>
+        <span class="badge-status approved"><i class="fas fa-check-circle"></i> Ready to Move</span>
+      </div>
+      <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 800; line-height: 1.25; margin-bottom: 0.5rem;">
+        {{ property.title }}
+      </h1>
+      <p style="color: var(--text-muted); font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fas fa-map-marker-alt" style="color: var(--accent-emerald);"></i> {{ property.address or property.area }}, {{ property.city }}, Pakistan
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+      <button class="btn btn-secondary btn-fav" data-prop-id="{{ property.id }}" style="position: static; width: auto; height: auto; border-radius: var(--radius-full); padding: 0.65rem 1.2rem; display: flex; gap: 0.5rem;">
+        <i class="{% if is_favorite %}fas fa-heart text-danger{% else %}far fa-heart{% endif %}"></i>
+        <span>Save</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="toggleCompare('{{ property.id }}')">
+        <i class="fas fa-columns"></i> <span>Compare</span>
+      </button>
+
+      <button class="btn btn-outline" onclick="document.getElementById('report-modal').style.display='flex'">
+        <i class="fas fa-flag"></i> <span>Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       IMAGE GALLERY SHOWCASE
+       ========================================================================== -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 3rem; border-radius: var(--radius-lg); overflow: hidden; max-height: 480px;">
+    <!-- Main Big Image -->
+    <div style="position: relative; height: 100%; overflow: hidden; background: #000;">
+      <img id="main-gallery-img" src="{{ first_img }}" alt="{{ property.title }}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+    </div>
+
+    <!-- Thumbnail Stack -->
+    <div style="display: grid; grid-template-rows: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; overflow-y: auto;">
+      {% for img_url in imgs %}
+        <div style="height: 100%; overflow: hidden; border-radius: var(--radius-md); border: 2px solid {% if loop.first %}var(--accent-emerald){% else %}transparent{% endif %}; cursor: pointer;" onclick="document.getElementById('main-gallery-img').src='{{ img_url }}';">
+          <img src="{{ img_url }}" alt="Thumbnail {{ loop.index }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Main Content & Contact Sidebar Layout -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; align-items: start;">
+    <!-- Left Column: Specs, Description, Facilities, Map -->
+    <div>
+      <!-- Rent & Financial Breakdown Card -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem; backdrop-filter: blur(16px);">
+        <h3 style="font-size: 1.1rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Monthly Rent</h3>
+        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <span style="font-size: 2.5rem; font-weight: 800; color: #fff;">PKR {{ property.monthly_rent|format_currency }}</span>
+          <span style="color: var(--text-muted); font-size: 1.1rem;">/ month</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-glass);">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Advance Payment</span>
+            <strong style="color: var(--text-main); font-size: 1.05rem;">{{ property.advance_payment or '2 Months' }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Security Deposit</span>
+            <strong style="color: var(--accent-emerald); font-size: 1.05rem;">PKR {{ property.security_deposit|format_currency }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-dim); display: block;">Extra Charges</span>
+            <strong style="color: var(--text-muted); font-size: 0.95rem;">{{ property.extra_charges or 'None' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Property Features Grid -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem;">Property Overview</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-emerald); font-size: 1.2rem;">
+              <i class="fas fa-bed"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Bedrooms</span>
+              <strong style="display: block;">{{ property.bedrooms }} Beds</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(0, 200, 255, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.2rem;">
+              <i class="fas fa-bath"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Bathrooms</span>
+              <strong style="display: block;">{{ property.bathrooms }} Baths</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-size: 1.2rem;">
+              <i class="fas fa-ruler-combined"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Area Size</span>
+              <strong style="display: block;">{{ property.size }} {{ property.size_unit }}</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-emerald); font-size: 1.2rem;">
+              <i class="fas fa-couch"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Furnishing</span>
+              <strong style="display: block;">{{ property.furnished }}</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(0, 200, 255, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.2rem;">
+              <i class="fas fa-parking"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Parking</span>
+              <strong style="display: block;">{{ property.parking_spaces }} Vehicle(s)</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.9rem;">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-size: 1.2rem;">
+              <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Floor</span>
+              <strong style="display: block;">{{ property.floor_level }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description Section -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Description</h3>
+        <div style="color: var(--text-muted); line-height: 1.8; font-size: 1rem; white-space: pre-line;">
+          {{ property.description }}
+        </div>
+      </div>
+
+      <!-- Amenities & Facilities Checklist -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem;">Facilities &amp; Amenities</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+          {% for f in facilities %}
+            <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--text-main); font-size: 0.95rem;">
+              <i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i>
+              <span>{{ f }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- OpenStreetMap / Location Representation -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Location &amp; Vicinity</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
+          Situated in prime <strong>{{ property.area }}, {{ property.city }}</strong>. Close to top schools, commercial markets, family parks, and public transportation.
+        </p>
+        <div style="height: 320px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-glass); position: relative;">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            frameborder="0" 
+            scrolling="no" 
+            marginheight="0" 
+            marginwidth="0" 
+            src="https://www.openstreetmap.org/export/embed.html?bbox={{ (property.longitude or 67.0011) - 0.03 }}%2C{{ (property.latitude or 24.8607) - 0.03 }}%2C{{ (property.longitude or 67.0011) + 0.03 }}%2C{{ (property.latitude or 24.8607) + 0.03 }}&amp;layer=mapnik&amp;marker={{ property.latitude or 24.8607 }}%2C{{ property.longitude or 67.0011 }}"
+            style="filter: invert(90%) hue-rotate(180deg) brightness(85%) contrast(90%); border: none;">
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Owner Profile & Direct Action Modals -->
+    <aside style="position: sticky; top: calc(var(--header-height) + 1.5rem);">
+      <!-- Landlord / Agent Profile Card -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; backdrop-filter: blur(16px); margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+          <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan)); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #fff;">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1.15rem; font-weight: 700;">{{ owner.name or property.contact_name or 'Property Owner' }}</h4>
+            <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--accent-emerald);">
+              {% if owner and owner.is_verified %}
+                <i class="fas fa-check-circle"></i> <span>Verified Landlord</span>
+              {% else %}
+                <i class="fas fa-shield-alt"></i> <span>Registered Member</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {% if owner and owner.bio %}
+          <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5;">
+            {{ owner.bio }}
+          </p>
+        {% endif %}
+
+        <!-- Direct Contact Buttons -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <!-- Call Button -->
+          <a href="tel:{{ property.contact_phone or '+923008291034' }}" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-phone-alt"></i> Call Owner ({{ property.contact_phone or '+92 300 8291034' }})
+          </a>
+
+          <!-- Direct WhatsApp Button with Pre-filled Property Context -->
+          {% set wa_num = (property.contact_whatsapp or property.contact_phone or '923008291034')|replace(' ', '')|replace('+', '')|replace('-', '') %}
+          <a href="https://wa.me/{{ wa_num }}?text=Assalam-o-Alaikum,%20I%20am%20interested%20in%20your%20rental%20property%20%22{{ property.title|urlencode }}%22%20on%20Rent%20Finder%20Pakistan.%20Is%20it%20available?" target="_blank" class="btn" style="background: #25D366; color: #fff; width: 100%;">
+            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp Chat
+          </a>
+
+          <!-- Book Physical Viewing Appointment Button -->
+          <button type="button" class="btn btn-secondary" style="width: 100%; border-color: var(--accent-cyan); color: var(--accent-cyan);" onclick="document.getElementById('appointment-modal').style.display='flex'">
+            <i class="fas fa-calendar-alt"></i> Book a Viewing Appointment
+          </button>
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-align: center;">
+          <i class="fas fa-shield-alt"></i> Never transfer advance token payments before physically inspecting the property and signing an agreement.
+        </div>
+      </div>
+
+      <!-- Quick Message Enquiry Box -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.75rem; backdrop-filter: blur(16px);">
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Send Message to Owner</h4>
+        <form action="{{ url_for('submit_enquiry', prop_id=property.id) }}" method="POST">
+          <div class="admin-form-group">
+            <input type="text" name="name" class="admin-input" placeholder="Your Name" value="{{ current_user.name if current_user else '' }}" required>
+          </div>
+          <div class="admin-form-group">
+            <input type="email" name="email" class="admin-input" placeholder="Your Email" value="{{ current_user.email if current_user else '' }}" required>
+          </div>
+          <div class="admin-form-group">
+            <input type="tel" name="phone" class="admin-input" placeholder="Your Phone / WhatsApp" value="{{ current_user.phone if current_user else '' }}" required>
+          </div>
+          <div class="admin-form-group">
+            <textarea name="message" class="admin-textarea" rows="3" required>Assalam-o-Alaikum, is this property still available for rent? Can we schedule a visit?</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-paper-plane"></i> Send Enquiry
+          </button>
+        </form>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     VIEWING APPOINTMENT MODAL
+     ========================================================================== -->
+<div id="appointment-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; max-width: 500px; width: 100%; position: relative;">
+    <button onclick="document.getElementById('appointment-modal').style.display='none'" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">
+      <i class="fas fa-times"></i>
+    </button>
+    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem;">Book a Viewing Appointment</h3>
+    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">
+      Select a date and time slot to physically inspect <strong>{{ property.title }}</strong>.
+    </p>
+
+    <form action="{{ url_for('book_appointment', prop_id=property.id) }}" method="POST">
+      <div class="admin-form-group">
+        <label>Your Name</label>
+        <input type="text" name="name" class="admin-input" value="{{ current_user.name if current_user else '' }}" required>
+      </div>
+      <div class="admin-form-group">
+        <label>Phone / WhatsApp Number</label>
+        <input type="tel" name="phone" class="admin-input" value="{{ current_user.phone if current_user else '' }}" required>
+      </div>
+      <div class="admin-form-group">
+        <label>Preferred Visit Date</label>
+        <input type="date" name="preferred_date" class="admin-input" required>
+      </div>
+      <div class="admin-form-group">
+        <label>Preferred Time Slot</label>
+        <select name="time_slot" class="admin-select">
+          <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+          <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
+          <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
+        </select>
+      </div>
+      <div class="admin-form-group">
+        <label>Special Instructions / Notes</label>
+        <textarea name="notes" class="admin-textarea" rows="2" placeholder="e.g. Will be visiting with family"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        Confirm Appointment Request
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     REPORT LISTING MODAL
+     ========================================================================== -->
+<div id="report-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 2rem; max-width: 500px; width: 100%; position: relative;">
+    <button onclick="document.getElementById('report-modal').style.display='none'" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">
+      <i class="fas fa-times"></i>
+    </button>
+    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--accent-rose);">Report Listing</h3>
+    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem;">
+      Help us keep Rent Finder Pakistan 100% safe and verified.
+    </p>
+
+    <form action="{{ url_for('report_property', prop_id=property.id) }}" method="POST">
+      <div class="admin-form-group">
+        <label>Reason for Report</label>
+        <select name="reason" class="admin-select" required>
+          <option value="Wrong Price / Rent">Wrong or Misleading Rent</option>
+          <option value="Already Rented / Unavailable">Property Already Rented Out</option>
+          <option value="Fake / Misleading Photos">Fake Photos or Misleading Details</option>
+          <option value="Duplicate Listing">Duplicate Listing</option>
+          <option value="Fraud / Scam Suspicion">Suspected Advance Scam / Fraud</option>
+          <option value="Other">Other Violation</option>
+        </select>
+      </div>
+      <div class="admin-form-group">
+        <label>Your Contact Email</label>
+        <input type="email" name="email" class="admin-input" placeholder="name@example.com" value="{{ current_user.email if current_user else '' }}">
+      </div>
+      <div class="admin-form-group">
+        <label>Additional Details</label>
+        <textarea name="details" class="admin-textarea" rows="3" placeholder="Please describe why this listing should be reviewed by admin..." required></textarea>
+      </div>
+      <button type="submit" class="btn" style="background: var(--accent-rose); color: #fff; width: 100%;">
+        Submit Report for Moderation
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

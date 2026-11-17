@@ -1,0 +1,94 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Banner Advertisements - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-topbar">
+  <div class="topbar-title">
+    <h1>Advertisement &amp; Sponsor Management</h1>
+    <p>Manage banner advertisements on the homepage and property sidebar.</p>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+  <!-- Create Ad Banner Form -->
+  <div class="data-card">
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem;">Create New Banner</h3>
+    <form action="{{ url_for('admin_ads') }}" method="POST">
+      <div class="admin-form-group">
+        <label>Campaign / Ad Title *</label>
+        <input type="text" name="title" class="admin-input" placeholder="e.g. Al-Habib Home Movers 20% Off" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Client / Sponsor Name *</label>
+        <input type="text" name="client_name" class="admin-input" placeholder="e.g. Al-Habib Logistics" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Banner Image URL *</label>
+        <input type="url" name="banner_image" class="admin-input" placeholder="https://example.com/banner.jpg" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Target Click URL *</label>
+        <input type="url" name="target_url" class="admin-input" placeholder="https://client-website.com" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Placement Slot</label>
+        <select name="placement" class="admin-select">
+          <option value="sidebar">Search Sidebar</option>
+          <option value="home_featured">Home Page Spotlight</option>
+          <option value="footer">Footer Banner</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        <i class="fas fa-plus"></i> Publish Advertisement
+      </button>
+    </form>
+  </div>
+
+  <!-- Active Ads List -->
+  <div class="data-card">
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem;">Active Advertisements</h3>
+    {% if ads %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Banner</th>
+              <th>Campaign</th>
+              <th>Client</th>
+              <th>Placement</th>
+              <th>Impressions</th>
+              <th>Clicks</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in ads %}
+              <tr>
+                <td>
+                  <img src="{{ a.banner_image }}" alt="{{ a.title }}" style="width: 60px; height: 40px; object-fit: cover; border-radius: var(--radius-sm);">
+                </td>
+                <td>
+                  <a href="{{ a.target_url }}" target="_blank" style="font-weight: 700; color: #fff;">{{ a.title }}</a>
+                </td>
+                <td>{{ a.client_name }}</td>
+                <td><span class="badge-type">{{ a.placement }}</span></td>
+                <td>{{ a.impressions }}</td>
+                <td>{{ a.clicks }}</td>
+                <td><span class="badge-status {{ a.status }}">{{ a.status }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No banner campaigns configured.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

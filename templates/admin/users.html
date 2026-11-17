@@ -1,0 +1,69 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}User &amp; Agent Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-topbar">
+  <div class="topbar-title">
+    <h1>Users, Landlords &amp; Property Dealers</h1>
+    <p>Manage user accounts, assign roles, and grant verified status badges.</p>
+  </div>
+</div>
+
+<div class="data-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name &amp; Profile</th>
+          <th>Email Address</th>
+          <th>Contact &amp; WhatsApp</th>
+          <th>City</th>
+          <th>Account Role</th>
+          <th>Trust Verification</th>
+          <th>Listings</th>
+          <th>Joined On</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>
+              <div style="font-weight: 700; color: #fff;">{{ u.name }}</div>
+              {% if u.bio %}<small style="color: var(--text-dim); display: block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.bio }}</small>{% endif %}
+            </td>
+            <td>{{ u.email }}</td>
+            <td>
+              <div>{{ u.phone or 'Not provided' }}</div>
+              {% if u.whatsapp %}<small style="color: #25D366;"><i class="fab fa-whatsapp"></i> {{ u.whatsapp }}</small>{% endif %}
+            </td>
+            <td>{{ u.city }}</td>
+            <td>
+              <span class="badge-status {% if u.role == 'admin' %}rejected{% elif u.role == 'agent' %}pending{% else %}approved{% endif %}">
+                {{ u.role|upper }}
+              </span>
+            </td>
+            <td>
+              {% if u.is_verified %}
+                <span class="badge-status approved"><i class="fas fa-check-circle"></i> Verified</span>
+              {% else %}
+                <span style="color: var(--text-dim); font-size: 0.8rem;">Unverified</span>
+              {% endif %}
+            </td>
+            <td><strong>{{ u.property_count }}</strong> ads</td>
+            <td>{{ u.created_at }}</td>
+            <td>
+              <form action="{{ url_for('admin_toggle_user_verified', user_id=u.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-sm {% if u.is_verified %}btn-outline{% else %}btn-primary{% endif %}" title="Toggle Verified Badge">
+                  <i class="fas fa-shield-alt"></i> {{ 'Revoke' if u.is_verified else 'Verify' }}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

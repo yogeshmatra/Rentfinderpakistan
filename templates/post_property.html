@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Post Your Rental Property - Rent Finder Pakistan{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: calc(var(--header-height) + 2rem); padding-bottom: 5rem; max-width: 900px;">
+  <!-- Header -->
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="section-badge">Landlord &amp; Agent Portal</div>
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">Post Your Rental Property</h1>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+      Submit your house, flat, portion or commercial space for rent across Pakistan. Our moderation team reviews and approves listings to ensure verified tenant inquiries.
+    </p>
+  </div>
+
+  <!-- Form Card -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-xl); padding: 2.5rem; backdrop-filter: blur(20px);">
+    <form action="{{ url_for('post_property') }}" method="POST" enctype="multipart/form-data">
+      <!-- Section 1: Basic Property Details -->
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-emerald); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fas fa-home"></i> 1. Property Details &amp; Location
+      </h3>
+
+      <div class="admin-form-group">
+        <label>Property Title *</label>
+        <input type="text" name="title" class="admin-input" placeholder="e.g. Luxury 3-Bed Corner Flat with Sea View in Clifton Block 4" required>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+        <div class="admin-form-group">
+          <label>Property Category *</label>
+          <select name="property_type" class="admin-select" required>
+            <option value="House">House / Bungalow</option>
+            <option value="Flat" selected>Flat / Apartment</option>
+            <option value="Upper Portion">Upper Portion</option>
+            <option value="Lower Portion">Lower Portion</option>
+            <option value="Complete Portion">Complete Portion</option>
+            <option value="Room">Room / Studio</option>
+            <option value="Shop">Retail Shop</option>
+            <option value="Office">Commercial Office</option>
+            <option value="Penthouse">Penthouse</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>City *</label>
+          <select name="city" class="admin-select" required>
+            <option value="Karachi">Karachi</option>
+            <option value="Lahore">Lahore</option>
+            <option value="Islamabad">Islamabad</option>
+            <option value="Rawalpindi">Rawalpindi</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="Multan">Multan</option>
+            <option value="Faisalabad">Faisalabad</option>
+            <option value="Peshawar">Peshawar</option>
+            <option value="Quetta">Quetta</option>
+            <option value="Sukkur">Sukkur</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+        <div class="admin-form-group">
+          <label>Area / Sector / Society *</label>
+          <input type="text" name="area" class="admin-input" placeholder="e.g. DHA Phase 5, Bahria Town, Gulberg III, F-7" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Complete Street Address (Optional)</label>
+          <input type="text" name="address" class="admin-input" placeholder="e.g. Street 14, Block B, Main Boulevard">
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Detailed Property Description *</label>
+        <textarea name="description" class="admin-textarea" rows="4" placeholder="Highlight key highlights, nearby landmarks, condition, water/gas availability, loadshedding status, and family preferences..." required></textarea>
+      </div>
+
+      <!-- Section 2: Financial Terms -->
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-cyan); margin: 2.5rem 0 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fas fa-money-bill-wave"></i> 2. Rent &amp; Security Terms
+      </h3>
+
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 1.25rem;">
+        <div class="admin-form-group">
+          <label>Monthly Rent (PKR) *</label>
+          <input type="number" name="monthly_rent" class="admin-input" placeholder="e.g. 65000" min="1000" step="1000" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Advance Payment</label>
+          <select name="advance_payment" class="admin-select">
+            <option value="1 Month Advance">1 Month Advance</option>
+            <option value="2 Months Advance" selected>2 Months Advance</option>
+            <option value="3 Months Advance">3 Months Advance</option>
+            <option value="6 Months Advance">6 Months Advance</option>
+            <option value="1 Year Advance">1 Year Advance</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Security Deposit (PKR)</label>
+          <input type="number" name="security_deposit" class="admin-input" placeholder="e.g. 130000" step="5000">
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Maintenance &amp; Extra Charges</label>
+        <input type="text" name="extra_charges" class="admin-input" placeholder="e.g. Building maintenance PKR 5,000/mo, Electricity & Gas as per bills">
+      </div>
+
+      <!-- Section 3: Specs & Furnishing -->
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-gold); margin: 2.5rem 0 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fas fa-ruler-combined"></i> 3. Specifications &amp; Amenities
+      </h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem;">
+        <div class="admin-form-group">
+          <label>Size</label>
+          <input type="number" name="size" class="admin-input" placeholder="e.g. 10" step="0.5">
+        </div>
+
+        <div class="admin-form-group">
+          <label>Unit</label>
+          <select name="size_unit" class="admin-select">
+            <option value="Marla">Marla</option>
+            <option value="Kanal">Kanal</option>
+            <option value="Sq Yards">Sq Yards</option>
+            <option value="Sq Ft" selected>Sq Ft</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Bedrooms</label>
+          <select name="bedrooms" class="admin-select">
+            <option value="0">0 (Shop / Studio)</option>
+            <option value="1">1 Bed</option>
+            <option value="2">2 Beds</option>
+            <option value="3" selected>3 Beds</option>
+            <option value="4">4 Beds</option>
+            <option value="5">5+ Beds</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Bathrooms</label>
+          <select name="bathrooms" class="admin-select">
+            <option value="1">1 Bath</option>
+            <option value="2">2 Baths</option>
+            <option value="3" selected>3 Baths</option>
+            <option value="4">4 Baths</option>
+            <option value="5">5+ Baths</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+        <div class="admin-form-group">
+          <label>Furnished Status</label>
+          <select name="furnished" class="admin-select">
+            <option value="Unfurnished" selected>Unfurnished</option>
+            <option value="Semi-Furnished">Semi-Furnished</option>
+            <option value="Furnished">Fully Furnished</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Floor Level</label>
+          <input type="text" name="floor_level" class="admin-input" placeholder="e.g. Ground, 1st Floor, 5th Floor">
+        </div>
+
+        <div class="admin-form-group">
+          <label>Parking Spaces</label>
+          <input type="number" name="parking_spaces" class="admin-input" value="1" min="0">
+        </div>
+      </div>
+
+      <!-- Facilities Checkboxes -->
+      <div class="admin-form-group">
+        <label style="margin-bottom: 0.75rem;">Facilities &amp; Utilities Available:</label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Sui Gas Active" checked> Sui Gas Active
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Sweet Water Supply" checked> Sweet Water Line
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Standby Generator"> Standby Generator
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="High-Speed Elevators"> High-Speed Elevators
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="24/7 Security CCTV"> 24/7 Security CCTV
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Covered Parking"> Covered Parking
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Balcony / Terrace"> Balcony / Terrace
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Lawn / Garden"> Lawn / Garden
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" name="facilities" value="Servant Quarters"> Servant Quarters
+          </label>
+        </div>
+      </div>
+
+      <!-- Section 4: Property Images -->
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 2.5rem 0 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fas fa-images"></i> 4. Upload Property Photos
+      </h3>
+
+      <div class="admin-form-group">
+        <label>Upload Images from Device (Multiple allowed)</label>
+        <input type="file" name="images" class="admin-input" multiple accept="image/*">
+        <small style="color: var(--text-dim); display: block; margin-top: 0.35rem;">Supported formats: JPG, PNG, WEBP. Max 16MB total.</small>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Or Paste Direct Image URLs (One URL per line)</label>
+        <textarea name="image_urls" class="admin-textarea" rows="2" placeholder="https://example.com/property-image-1.jpg"></textarea>
+      </div>
+
+      <!-- Section 5: Landlord Contact Info -->
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #25D366; margin: 2.5rem 0 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+        <i class="fab fa-whatsapp"></i> 5. Landlord / Agent Contact Information
+      </h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem;">
+        <div class="admin-form-group">
+          <label>Contact Name *</label>
+          <input type="text" name="contact_name" class="admin-input" value="{{ current_user.name if current_user else '' }}" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>Calling Phone Number *</label>
+          <input type="tel" name="contact_phone" class="admin-input" placeholder="+92 300 1234567" value="{{ current_user.phone if current_user else '' }}" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label>WhatsApp Number *</label>
+          <input type="tel" name="contact_whatsapp" class="admin-input" placeholder="+92 300 1234567" value="{{ current_user.whatsapp or (current_user.phone if current_user else '') }}" required>
+        </div>
+      </div>
+
+      <!-- Moderation Notice -->
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); padding: 1.25rem; margin: 2rem 0; font-size: 0.85rem; color: var(--text-muted);">
+        <i class="fas fa-info-circle" style="color: var(--accent-emerald); margin-right: 6px;"></i>
+        <strong>Trust &amp; Safety Assurance:</strong> To protect Pakistani renters from duplicate or misleading ads, your listing will be submitted to the admin moderation queue and reviewed within 1-2 hours.
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+        <i class="fas fa-check-circle"></i> Submit Property for Review
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

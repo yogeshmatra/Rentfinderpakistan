@@ -1,0 +1,129 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Monetization &amp; Revenue - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-topbar">
+  <div class="topbar-title">
+    <h1>Revenue, Plans &amp; Monetization</h1>
+    <p>Manage subscription packages, featured listing upgrades, and verify Pakistani mobile payments.</p>
+  </div>
+</div>
+
+<!-- Payments Verification Table -->
+<div class="data-card" style="margin-bottom: 2.5rem;">
+  <div class="data-card-header">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-emerald);">
+      <i class="fas fa-money-check-alt"></i> Received Payment Submissions (Easypaisa / JazzCash / Bank)
+    </h3>
+  </div>
+
+  {% if payments %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User / Landlord</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Method &amp; Sender Phone</th>
+            <th>Transaction ID (TID)</th>
+            <th>Notes / Property</th>
+            <th>Status</th>
+            <th>Verification Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pay in payments %}
+            <tr>
+              <td><strong>{{ pay.user_name }}</strong></td>
+              <td>{{ pay.user_email }}</td>
+              <td><span class="badge-type">{{ pay.payment_type }}</span></td>
+              <td style="color: var(--accent-emerald); font-weight: 800;">PKR {{ pay.amount|format_currency }}</td>
+              <td>
+                <strong>{{ pay.payment_method }}</strong>
+                {% if pay.account_number %}<div style="font-size: 0.8rem; color: var(--text-dim);">{{ pay.account_number }}</div>{% endif %}
+              </td>
+              <td><code style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.5rem; border-radius: 4px;">{{ pay.transaction_id }}</code></td>
+              <td>
+                {% if pay.prop_title %}<strong>Property #{{ pay.property_id }}:</strong> {{ pay.prop_title }}{% endif %}
+                {% if pay.notes %}<div style="font-size: 0.8rem; color: var(--text-dim);">{{ pay.notes }}</div>{% endif %}
+              </td>
+              <td><span class="badge-status {{ pay.status }}">{{ pay.status }}</span></td>
+              <td>
+                {% if pay.status == 'pending' %}
+                  <div style="display: flex; gap: 0.4rem;">
+                    <form action="{{ url_for('admin_payment_status', pay_id=pay.id) }}" method="POST">
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="btn btn-primary btn-sm" title="Confirm Payment Received">
+                        <i class="fas fa-check"></i> Approve
+                      </button>
+                    </form>
+                    <form action="{{ url_for('admin_payment_status', pay_id=pay.id) }}" method="POST">
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="btn btn-sm" style="background: var(--accent-rose); color: #fff;" title="Reject">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <span style="color: var(--accent-emerald); font-size: 0.8rem;"><i class="fas fa-check-circle"></i> Completed</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No payment transactions recorded yet.</p>
+  {% endif %}
+</div>
+
+<!-- Active Landlord Subscriptions -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-cyan);">
+      <i class="fas fa-crown"></i> Active Landlord &amp; Agency Subscriptions
+    </h3>
+  </div>
+
+  {% if subscriptions %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Subscriber</th>
+            <th>Plan Name</th>
+            <th>Monthly Amount</th>
+            <th>Payment Method</th>
+            <th>Transaction Ref</th>
+            <th>Listing Limit</th>
+            <th>Start Date</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in subscriptions %}
+            <tr>
+              <td><strong>{{ sub.user_name }}</strong></td>
+              <td><span class="badge-featured">{{ sub.plan_name }}</span></td>
+              <td style="color: var(--accent-emerald); font-weight: 700;">PKR {{ sub.amount|format_currency }}</td>
+              <td>{{ sub.payment_method }}</td>
+              <td><code>{{ sub.transaction_ref }}</code></td>
+              <td>{{ sub.listing_limit }} listings</td>
+              <td>{{ sub.started_at }}</td>
+              <td>{{ sub.expires_at }}</td>
+              <td><span class="badge-status {{ sub.status }}">{{ sub.status }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: var(--text-dim); text-align: center; padding: 2rem;">No active agency subscriptions.</p>
+  {% endif %}
+</div>
+{% endblock %}

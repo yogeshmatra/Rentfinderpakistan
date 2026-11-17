@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Rent Finder Pakistan - Find Your Perfect Rental Home{% endblock %}</title>
+  <meta name="description" content="Pakistan's #1 dedicated rental property marketplace. Find houses, flats, rooms, portions, shops and offices for rent in Karachi, Lahore, Islamabad and across Pakistan.">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Ambient Lighting Orbs -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Announcement Bar -->
+  {% if site_settings.get('announcement_bar') %}
+  <div style="background: rgba(16, 185, 129, 0.15); border-bottom: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1rem; text-align: center; position: relative; z-index: 101;">
+    <i class="fas fa-bullhorn" style="margin-right: 6px;"></i> {{ site_settings.get('announcement_bar') }}
+  </div>
+  {% endif %}
+
+  <!-- Header Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="{{ url_for('index') }}" class="brand-logo">
+        <div class="logo-badge">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="brand-name">
+          RentFinder<span>.pk</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="nav-menu">
+        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('properties') }}" class="nav-link {% if request.endpoint == 'properties' %}active{% endif %}">Browse Properties</a>
+        <a href="{{ url_for('pricing') }}" class="nav-link {% if request.endpoint == 'pricing' %}active{% endif %}">Pricing & Plans</a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About Us</a>
+        <a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}">Contact</a>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Compare Tray Button -->
+        <button class="icon-btn" onclick="openComparePage()" title="Compare Properties">
+          <i class="fas fa-columns"></i>
+          <span class="badge-count compare-badge-count">0</span>
+        </button>
+
+        {% if current_user %}
+          <!-- Saved Favorites Button -->
+          <a href="{{ url_for('dashboard_favorites') }}" class="icon-btn" title="Saved Favorites">
+            <i class="fas fa-heart"></i>
+            <span class="badge-count favorites-badge-count">{{ saved_count }}</span>
+          </a>
+
+          <!-- User / Admin Dashboard Dropdown -->
+          {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-sm" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+              <i class="fas fa-shield-alt"></i> Admin Panel
+            </a>
+          {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">
+              <i class="fas fa-user-circle"></i> Dashboard
+            </a>
+          {% endif %}
+
+          <a href="{{ url_for('post_property') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Post Property
+          </a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Login</a>
+          <a href="{{ url_for('post_property') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Post Property
+          </a>
+        {% endif %}
+
+        <!-- Mobile Drawer Hamburger -->
+        <button class="icon-btn mobile-nav-toggle" style="display: none;" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash Messages / Toast Container -->
+  <div class="toast-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast {{ category }}">
+            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" style="display: none;">
+    <div class="drawer-header">
+      <div class="brand-name">RentFinder<span>.pk</span></div>
+      <button class="icon-btn close-drawer"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="drawer-links">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('properties') }}">Browse Properties</a>
+      <a href="{{ url_for('post_property') }}">Post Property</a>
+      <a href="{{ url_for('pricing') }}">Pricing & Plans</a>
+      <a href="{{ url_for('about') }}">About Us</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+      {% if current_user %}
+        <a href="{{ url_for('dashboard') }}">My Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ==========================================================================
+       RENT FINDER AI CHATBOT WIDGET
+       ========================================================================== -->
+  <button id="chatbot-trigger-btn" class="chatbot-trigger-btn" title="Chat with Rent Finder AI">
+    <i class="fas fa-robot" style="font-size: 1.5rem;"></i>
+  </button>
+
+  <div id="chat-modal" class="chat-modal">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-brand">
+        <div class="chat-avatar">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="chat-title">
+          <h3>Rent Finder AI</h3>
+          <span class="chat-status">Online • Gemini Powered</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button id="chat-clear-btn" class="icon-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" title="Clear conversation">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button id="chat-close-btn" class="icon-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" title="Close chat">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages Stream -->
+    <div id="chat-messages" class="chat-messages">
+      <!-- Injected dynamically by chatbot.js -->
+    </div>
+
+    <!-- Suggested Question Chips -->
+    <div id="chat-suggestions" class="chat-suggestions">
+      <button class="chip-btn" data-prompt="Find flats in Karachi under 50k">Karachi Flats &lt; 50k</button>
+      <button class="chip-btn" data-prompt="Show houses in Lahore DHA">Lahore DHA Houses</button>
+      <button class="chip-btn" data-prompt="Show properties in Islamabad F-7">Islamabad F-7</button>
+      <button class="chip-btn" data-prompt="How do I post my rental property?">How to Post Property</button>
+      <button class="chip-btn" data-prompt="What are standard security deposit terms in Pakistan?">Security Deposit FAQ</button>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form id="chat-form" class="chat-input-bar">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Ask about rental properties or anything..." autocomplete="off">
+      <button type="submit" class="chat-send-btn" aria-label="Send message">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="{{ url_for('index') }}" class="brand-logo" style="margin-bottom: 1rem;">
+            <div class="logo-badge"><i class="fas fa-home"></i></div>
+            <div class="brand-name">RentFinder<span>.pk</span></div>
+          </a>
+          <p>{{ site_settings.get('site_tagline', 'Find Your Perfect Rental Home.') }}</p>
+          <p style="font-size: 0.85rem; color: var(--text-dim);"><i class="fas fa-map-marker-alt" style="color: var(--accent-emerald);"></i> {{ site_settings.get('office_address') }}</p>
+          <p style="font-size: 0.85rem; color: var(--text-dim);"><i class="fas fa-phone-alt" style="color: var(--accent-cyan);"></i> {{ site_settings.get('contact_phone') }}</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Top Cities</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('properties', city='Karachi') }}">Flats for Rent in Karachi</a></li>
+            <li><a href="{{ url_for('properties', city='Lahore') }}">Houses for Rent in Lahore</a></li>
+            <li><a href="{{ url_for('properties', city='Islamabad') }}">Portions in Islamabad</a></li>
+            <li><a href="{{ url_for('properties', city='Rawalpindi') }}">Bahria Town Rawalpindi</a></li>
+            <li><a href="{{ url_for('properties', city='Hyderabad') }}">Properties in Hyderabad</a></li>
+            <li><a href="{{ url_for('properties', city='Multan') }}">Properties in Multan</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('properties') }}">Browse All Listings</a></li>
+            <li><a href="{{ url_for('post_property') }}">Post Your Rental Property</a></li>
+            <li><a href="{{ url_for('pricing') }}">Landlord & Dealer Plans</a></li>
+            <li><a href="{{ url_for('compare') }}">Compare Listings</a></li>
+            <li><a href="{{ url_for('about') }}">About Our Platform</a></li>
+            <li><a href="{{ url_for('contact') }}">Help & Support Center</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Trust & Safety</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('terms') }}">Terms & Tenancy Rules</a></li>
+            <li><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+            <li><a href="{{ url_for('contact') }}">Report Fake Listing</a></li>
+            <li><a href="{{ url_for('login') }}">Landlord Portal Login</a></li>
+            <li><a href="{{ url_for('login') }}">Admin Secure Access</a></li>
+          </ul>
+          <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
+            <a href="https://wa.me/{{ site_settings.get('whatsapp_number', '923008291034')|replace(' ', '')|replace('+', '') }}" target="_blank" class="icon-btn" style="color: #25D366;" title="WhatsApp Support">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="mailto:{{ site_settings.get('contact_email') }}" class="icon-btn" title="Email Support">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; {{ now.year }} Rent Finder Pakistan (Pvt) Ltd. All rights reserved.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="{{ url_for('terms') }}">Terms of Service</a>
+          <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+          <a href="{{ url_for('contact') }}">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
